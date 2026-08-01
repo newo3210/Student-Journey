@@ -1,0 +1,27 @@
+﻿# Dependencies & build
+node_modules/
+dist/
+dist-ssr/
+build/
+.next/
+coverage/
+*.tsbuildinfo
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# Local scratch
+tmp/
+!.gitkeep
+
+# Vite
+*.local

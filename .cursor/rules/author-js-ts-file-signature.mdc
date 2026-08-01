@@ -1,0 +1,24 @@
+﻿---
+description: Author signature on new TS/JS source files
+globs: "**/*.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+# Author file signature (TypeScript / JavaScript)
+
+When **creating** a new `.ts`, `.tsx`, `.js`, or `.jsx` file **anywhere in this repository**, the **first line** of the file MUST be exactly:
+
+```ts
+//Mariano Montini ('bosque', 'bosquestudio')
+```
+
+Rules:
+
+- Place it at the very beginning of the file (line 1), before imports, `'use client'` / `'use server'`, shebangs, or other comments.
+- Do not add a space after `//` on the signature line (match the signature exactly).
+- After the signature, structure the file with visually separated sections and abbreviated section comments (params groups, function blocks) per `modular-code-comments.mdc`.
+- Use this form only in languages where `//` line comments are valid (TS/JS/JSX/TSX).
+- Do not add this signature when only editing an existing file that already has content (unless the file is brand-new / empty in the same change).
+- If a brand-new file is created without the signature, add it as line 1 before finishing the change.
+- **Skip** generated or tool-owned outputs when they should not be hand-edited (e.g. scaffolds that overwrite configs, files under `dist/`, `build/`, `.next/`, `coverage/`, `node_modules/`). Prefer adding the signature on **hand-written application and test source**.
+- Do **not** add the signature to `.json`, `.md`, `.css`, `.sql`, or other non-JS/TS formats.

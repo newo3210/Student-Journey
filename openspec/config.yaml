@@ -1,0 +1,25 @@
+schema: spec-driven
+
+# Project context shown to AI when creating artifacts.
+context: |
+  Project: Student Journey — Full Stack portfolio hub (docs + OpenSpec).
+  Priority track: Academic — five traditional Full Stack Modern GitHub repos (NO AI, NO blockchain).
+  Catalog: docs/ACADEMIC_PORTFOLIO.md
+  Repos: react-task-manager → express-api-boilerplate → fullstack-blog-crud → auth-jwt-dashboard → nextjs-booking-app
+  Academic stack: React/Vite, Express, PostgreSQL, Prisma, Zod, Tailwind, Next.js App Router (repo 5), JWT auth (repo 4+).
+  Advanced track (AI SDK, RAG, queues): deferred until academic pack is done.
+  Language: OpenSpec + ARCHITECTURE_SDD.md in English; STUDENT_DECISION_LOG.md and pedagogical docs may be Spanish.
+  Entry: /director (assisted OpenSpec). Standards: docs/base-standards.md
+
+
+rules:
+  _global:
+    - Before creating any artifact, read docs/base-standards.md
+    - Map conceptual Clean Architecture layers to concrete paths in design.md
+    - Include tasks to update ARCHITECTURE_SDD.md (EN) and STUDENT_DECISION_LOG.md (ES) when the change affects flow, modules, or learning milestones
+    - Do not invent folders or APIs that contradict greenfield status until a build change lands
+
+  tasks:
+    - Break tasks into chunks of max 2 hours
+    - Prefer study/docs changes before production app scaffolding unless the user asks to build
+    - Every build change must keep presentation thin and AI/business logic in services

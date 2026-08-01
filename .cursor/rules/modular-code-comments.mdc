@@ -1,0 +1,82 @@
+﻿---
+description: Visually separated code sections with comments on param groups and function blocks
+globs: "**/*.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+# Section comments inside source files (params + function blocks)
+
+"Module" here means a **logical section inside a source file**, not the folder name.
+
+Hand-written `.ts` / `.tsx` / `.js` / `.jsx` must keep code **visually ordered**: blank-line separation between sections, and a short comment on each section saying **what that group is** and **what it does**.
+
+## 1. What needs a section comment
+
+Comment every coherent block, including:
+
+| Section kind | Examples |
+|---|---|
+| Parameter / props / options groups | `type XProps`, function params object, config constants |
+| Schema / field groups | Zod object fields, DTO fields |
+| State groups | Related `useState` / refs clustered together |
+| Function blocks | Each exported function, handler, hook callback group |
+| Return / public API groups | Object returned by a hook (`return { ... }`) |
+| JSX regions (when non-trivial) | Form fields block, list block, actions block |
+
+## 2. Required format
+
+1. **Line 1 of the file** remains the author signature (see `author-js-ts-file-signature.mdc`).
+2. Separate sections with a **blank line**.
+3. Immediately **above** each section, one abbreviated `//` comment:
+
+```ts
+// <What this block is> - <What it does>
+```
+
+Examples:
+
+```ts
+// Task entity fields - identity, display title, completion flag, creation timestamp.
+export const taskSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  completed: z.boolean(),
+  createdAt: z.string().min(1),
+})
+```
+
+```ts
+// Create-task inputs - raw title from UI plus optional id factory for tests.
+export function createTask(titleInput: string, idFactory: () => string = () => crypto.randomUUID()) {
+  // ...
+}
+```
+
+```ts
+// Form props - submit callback and validation error from parent feature hook.
+type TaskFormProps = {
+  onSubmit: (title: string) => boolean
+  error: string | null
+}
+```
+
+```ts
+// Mutation handlers - create/edit/toggle/remove wired to domain operations.
+const create = useCallback(/* ... */)
+```
+
+## 3. Visual separation rules
+
+- One blank line between sections; do not glue unrelated blocks together.
+- Do not put a wall of uncommented functions/props in a row.
+- Prefer grouping related params in a props/options type with a section comment, rather than a long unexplained parameter list.
+- Comments stay abbreviated (one line). Do not narrate every statement inside the block.
+- Comment language: **English** (code artifacts).
+
+## 4. Folder modularity (still required)
+
+Keep presentation / features-services / infrastructure / contracts in separate folders/files. Section comments document **blocks inside** those files.
+
+## 5. Skip list
+
+Same as author signature: skip `node_modules/`, `.next/`, `dist/`, `build/`, `coverage/`, generated ambient stubs when empty, and non-JS/TS formats.
