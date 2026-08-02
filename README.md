@@ -1,4 +1,4 @@
-# Student Journey
+﻿# Student Journey
 
 Full Stack Modern **academic portfolio hub** for [@newo3210](https://github.com/newo3210).
 
@@ -12,6 +12,7 @@ Clase 1 JS — también publicadas en [full-stack-student-practices](https://git
 |---|---|
 | Calculadora | `apps/js-calculator/` |
 | RPG Avatar Creator | `apps/js-rpg-avatar/` |
+| Perfil de usuario (objeto) | `apps/js-user-profile/` |
 
 ## Academic repos (traditional Full Stack — no AI)
 

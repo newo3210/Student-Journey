@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile Object — JS Fundamentals</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <p class="eyebrow">Fundamentos JS · Clase 1</p>
+        <h1>Perfil de usuario (objeto)</h1>
+        <p class="subtitle">
+          Practicá un objeto <code>user</code>, sus propiedades, acceso con
+          <code>.</code> / <code>[]</code>, y funciones que lo actualizan.
+        </p>
+      </header>
+
+      <section class="panel" aria-label="Editor de perfil">
+        <h2>Editar perfil</h2>
+
+        <label class="field">
+          <span>Nombre</span>
+          <input id="name-input" type="text" maxlength="32" value="Mariano" />
+        </label>
+
+        <label class="field">
+          <span>Edad</span>
+          <input id="age-input" type="number" min="1" max="120" value="28" />
+        </label>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="email-input" type="email" value="mariano@example.com" />
+        </label>
+
+        <label class="field">
+          <span>Ciudad</span>
+          <input id="city-input" type="text" maxlength="40" value="Buenos Aires" />
+        </label>
+
+        <label class="field">
+          <span>Rol</span>
+          <select id="role-select">
+            <option value="student">Estudiante</option>
+            <option value="junior">Junior Developer</option>
+            <option value="mentor">Mentor</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Activo</span>
+          <select id="active-select">
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
+        </label>
+
+        <div class="block">
+          <h3>Hobbies (array dentro del objeto)</h3>
+          <div class="hobby-row">
+            <input id="hobby-input" type="text" maxlength="24" placeholder="Ej: guitarra" />
+            <button id="hobby-add-btn" type="button">Agregar</button>
+          </div>
+          <div id="hobby-chips" class="chips" aria-label="Hobbies del usuario"></div>
+        </div>
+
+        <div class="actions">
+          <button id="save-btn" type="button">Aplicar cambios</button>
+          <button id="reset-btn" type="button" class="secondary">Reset</button>
+        </div>
+        <p id="form-error" class="error" role="alert" hidden></p>
+      </section>
+
+      <section class="panel preview" aria-label="Vista del objeto">
+        <h2>Tarjeta de perfil</h2>
+        <article id="card" class="card" aria-live="polite"></article>
+
+        <h2>Objeto en consola visual</h2>
+        <pre id="object-view" class="object-view" aria-live="polite"></pre>
+      </section>
+
+      <section class="panel tips">
+        <h2>Qué estás usando</h2>
+        <ul>
+          <li><code>const user = { ... }</code> — objeto con propiedades</li>
+          <li>Acceso <code>user.name</code> y <code>user["email"]</code></li>
+          <li>Array <code>user.hobbies</code> + <code>push</code> / <code>splice</code></li>
+          <li>Funciones que reciben datos y mutan/actualizan el objeto</li>
+          <li>Boolean <code>isActive</code>, number <code>age</code>, strings</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
