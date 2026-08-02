@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS Calculator — Fundamentals</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <p class="eyebrow">Fundamentos JS · Día 1</p>
+        <h1>Calculadora</h1>
+        <p class="subtitle">
+          Practica: <code>let</code>/<code>const</code>, números, funciones, operadores y ternario.
+        </p>
+      </header>
+
+      <section class="calculator" aria-label="Calculadora básica">
+        <label class="field">
+          <span>Número A</span>
+          <input id="input-a" type="number" step="any" value="12" />
+        </label>
+
+        <label class="field">
+          <span>Número B</span>
+          <input id="input-b" type="number" step="any" value="3" />
+        </label>
+
+        <div class="ops" role="group" aria-label="Operaciones">
+          <button type="button" data-op="add">+</button>
+          <button type="button" data-op="subtract">−</button>
+          <button type="button" data-op="multiply">×</button>
+          <button type="button" data-op="divide">÷</button>
+        </div>
+
+        <p id="result" class="result" aria-live="polite">Resultado: —</p>
+        <p id="error" class="error" role="alert" hidden></p>
+      </section>
+
+      <section class="tips">
+        <h2>Qué estás usando</h2>
+        <ul>
+          <li>Variables <code>const</code> / <code>let</code></li>
+          <li>Tipos <code>number</code>, <code>string</code>, <code>boolean</code></li>
+          <li>Objeto de operaciones + funciones</li>
+          <li>Operadores aritméticos, comparación y ternario</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

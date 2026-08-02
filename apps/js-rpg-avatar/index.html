@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RPG Avatar Creator — JS Fundamentals</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <p class="eyebrow">Fundamentos JS · Clase 1</p>
+        <h1>RPG Avatar Creator</h1>
+      </header>
+
+      <section class="panel" aria-label="Editor de avatar">
+        <label class="field">
+          <span>Nombre del avatar</span>
+          <input id="name-input" type="text" maxlength="24" placeholder="Ej: Bosque" value="Aria" />
+        </label>
+
+        <label class="field">
+          <span>Clase</span>
+          <select id="class-select"></select>
+        </label>
+
+        <div class="block">
+          <h2>Rasgos (array)</h2>
+          <p class="hint">Click para activar/desactivar. Quedan guardados en un array.</p>
+          <div id="traits-box" class="chips" role="group" aria-label="Rasgos"></div>
+        </div>
+
+        <div class="block">
+          <h2>Poderes (array)</h2>
+          <p class="hint">Elegí hasta 2 poderes según tu clase.</p>
+          <div id="powers-box" class="chips" role="group" aria-label="Poderes"></div>
+        </div>
+
+        <div class="block">
+          <div class="points-head">
+            <h2>Puntos de atributo</h2>
+            <p id="points-left" class="points-left">Puntos restantes: 10</p>
+          </div>
+          <p class="hint">Total a repartir: 10. Cada atributo empieza en 1 (mínimo 1, máximo 8).</p>
+          <div id="stats-box" class="stats"></div>
+        </div>
+      </section>
+
+      <section class="panel preview" aria-label="Vista del avatar">
+        <h2>Ficha del personaje</h2>
+        <pre id="sheet" class="sheet" aria-live="polite"></pre>
+        <button id="reset-btn" type="button" class="secondary">Resetear build</button>
+      </section>
+
+      <section class="panel tips">
+        <h2>Conceptos de clase que estás usando</h2>
+        <ul>
+          <li><strong>Objeto</strong> <code>avatar</code>: nombre, clase, traits, powers, stats</li>
+          <li><strong>Arrays</strong>: rasgos y poderes seleccionados</li>
+          <li><strong>Funciones</strong>: sumar/restar puntos, validar, renderizar</li>
+          <li><strong>Operadores</strong>: <code>+</code> <code>-</code> <code>===</code> <code>&amp;&amp;</code> ternario</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
