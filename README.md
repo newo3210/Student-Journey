@@ -1,14 +1,23 @@
 # Student Journey
 
-Full Stack Modern **academic portfolio hub** for [@Newo3210](https://github.com/Newo3210).
+Full Stack Modern **academic portfolio hub** for [@newo3210](https://github.com/newo3210).
 
 Spec-driven docs + learning roadmap. Application demos live under `apps/` and are also published as standalone GitHub repos.
+
+## Course practices (fundamentals)
+
+Clase 1 JS — también publicadas en [full-stack-student-practices](https://github.com/newo3210/full-stack-student-practices):
+
+| Práctica | Path local |
+|---|---|
+| Calculadora | `apps/js-calculator/` |
+| RPG Avatar Creator | `apps/js-rpg-avatar/` |
 
 ## Academic repos (traditional Full Stack — no AI)
 
 | # | Repo | Status |
 |---|---|---|
-| 1 | [react-task-manager](https://github.com/Newo3210/react-task-manager) | Implemented (`apps/react-task-manager`) |
+| 1 | [react-task-manager](https://github.com/newo3210/react-task-manager) | Implemented (`apps/react-task-manager`) |
 | 2 | `express-api-boilerplate` | Profiled |
 | 3 | `fullstack-blog-crud` | Profiled |
 | 4 | `auth-jwt-dashboard` | Profiled |
