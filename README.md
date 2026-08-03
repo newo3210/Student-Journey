@@ -13,6 +13,7 @@ Clase 1 JS — también publicadas en [full-stack-student-practices](https://git
 | Calculadora | `apps/js-calculator/` |
 | RPG Avatar Creator | `apps/js-rpg-avatar/` |
 | Perfil de usuario (objeto) | `apps/js-user-profile/` |
+| Lista de compras | `apps/js-shopping-list/` |
 
 ## Academic repos (traditional Full Stack — no AI)
 

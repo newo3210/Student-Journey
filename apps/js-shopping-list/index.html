@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping List — JS Fundamentals</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <p class="eyebrow">Fundamentos JS · Clase 1 · Portfolio</p>
+        <h1>Lista de compras</h1>
+        <p class="subtitle">
+          Array de ítems, índices, <code>push</code>/<code>splice</code>, funciones y filtros básicos.
+        </p>
+      </header>
+
+      <section class="panel" aria-label="Agregar producto">
+        <h2>Agregar ítem</h2>
+        <div class="add-row">
+          <label class="field grow">
+            <span>Producto</span>
+            <input id="name-input" type="text" maxlength="40" placeholder="Ej: leche" />
+          </label>
+          <label class="field qty">
+            <span>Cantidad</span>
+            <input id="qty-input" type="number" min="1" max="99" value="1" />
+          </label>
+          <button id="add-btn" type="button">Agregar</button>
+        </div>
+        <p id="form-error" class="error" role="alert" hidden></p>
+      </section>
+
+      <section class="panel" aria-label="Lista">
+        <div class="list-head">
+          <h2>Mi lista</h2>
+          <div class="filters" role="group" aria-label="Filtros">
+            <button type="button" class="filter is-on" data-filter="all">Todas</button>
+            <button type="button" class="filter" data-filter="pending">Pendientes</button>
+            <button type="button" class="filter" data-filter="done">Compradas</button>
+          </div>
+        </div>
+
+        <p id="summary" class="summary">0 ítems</p>
+        <ul id="list" class="list"></ul>
+
+        <div class="actions">
+          <button id="clear-done-btn" type="button" class="secondary">Limpiar compradas</button>
+          <button id="reset-btn" type="button" class="secondary">Reset lista</button>
+        </div>
+      </section>
+
+      <section class="panel tips">
+        <h2>Qué estás usando</h2>
+        <ul>
+          <li><strong>Array</strong> <code>items</code> — la lista completa</li>
+          <li><strong>Objetos</strong> en cada ítem: <code>{ id, name, qty, done }</code></li>
+          <li><strong>Índices</strong> + <code>push</code> / <code>splice</code></li>
+          <li><strong>Funciones</strong> para agregar, tachar, borrar y filtrar</li>
+          <li><strong>Operadores</strong> comparación, lógicos y ternario en el resumen</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
