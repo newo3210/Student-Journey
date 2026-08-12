@@ -1,82 +1,96 @@
-﻿---
-description: Visually separated code sections with comments on param groups and function blocks
-globs: "**/*.{ts,tsx,js,jsx}"
+---
+description: Module section comments with file-level decision and why-wiring rationale
+globs: "**/*.{ts,tsx,js,jsx,css,html}"
 alwaysApply: false
 ---
 
-# Section comments inside source files (params + function blocks)
+# Module comments (decision + why wiring)
 
-"Module" here means a **logical section inside a source file**, not the folder name.
+"Module" = a **logical section inside a source file**, not a folder name.
 
-Hand-written `.ts` / `.tsx` / `.js` / `.jsx` must keep code **visually ordered**: blank-line separation between sections, and a short comment on each section saying **what that group is** and **what it does**.
+Hand-written source keeps code **visually ordered**: blank line between sections, and a short comment that is **technical and didactic** — enough to teach the wiring, not an essay.
+
+## 0. File-level decision (required on non-trivial files)
+
+After the author signature (see `author-js-ts-file-signature.mdc` / `author-html-css-file-signature.mdc`), open with a short **DECISION** block in Spanish (no diacritics):
+
+1. **Objetivo** — que resuelve este archivo
+2. **Particion** — como se parto el problema y como se conectan las piezas
+3. **Definiciones** — tokens, tipos, constantes o contratos que cargan el diseno (solo los que importan)
+
+Do **not** fill the decision with process talk (e.g. "no JS", "CSS alcanza", "editable solo desde codigo") unless that constraint is the actual product goal.
+
+```ts
+//Mariano Montini ('bosque', 'bosquestudio')
+
+/*
+  DECISION
+  Objetivo: <que hay que lograr>
+  Particion: <ejes / modulos en que se parto y como se conectan>
+  Definiciones: <tokens | tipos | constantes que cargan el diseno>
+*/
+```
+
+CSS / HTML use the same content with `/* ... */` or `<!-- ... -->`.
+
+Skip the decision block only for trivial one-liners or pure re-exports.
 
 ## 1. What needs a section comment
 
-Comment every coherent block, including:
+Comment every coherent block:
 
 | Section kind | Examples |
 |---|---|
-| Parameter / props / options groups | `type XProps`, function params object, config constants |
-| Schema / field groups | Zod object fields, DTO fields |
-| State groups | Related `useState` / refs clustered together |
-| Function blocks | Each exported function, handler, hook callback group |
-| Return / public API groups | Object returned by a hook (`return { ... }`) |
-| JSX regions (when non-trivial) | Form fields block, list block, actions block |
+| Parameter / props / options groups | `type XProps`, config constants |
+| Schema / field groups | Zod / DTO fields |
+| State groups | Related `useState` / refs |
+| Function blocks | Exported functions, handlers, hook callbacks |
+| Return / public API groups | Hook `return { ... }` |
+| JSX / markup regions (non-trivial) | Form fields, list, actions |
+| CSS rule groups | Tokens shell, variants, motion, layout chrome |
 
-## 2. Required format
+## 2. What each module comment must say
 
-1. **Line 1 of the file** remains the author signature (see `author-js-ts-file-signature.mdc`).
-2. Separate sections with a **blank line**.
-3. Immediately **above** each section, one abbreviated `//` comment:
+Above each section, explain **wiring**, not narration — **always in Spanish without diacritics**:
 
-```ts
-// <What this block is> - <What it does>
-```
+- Why this block exists in the chain (what it connects to)
+- Why these definitions / tokens / instructions / logic are the ones used
 
-Examples:
+Tone: technical, slightly didactic, human — **not** robotic checklists (`Por que:`, `Why:`, `Note:`). No paraphrasing the code line-by-line. No filler.
 
-```ts
-// Task entity fields - identity, display title, completion flag, creation timestamp.
-export const taskSchema = z.object({
-  id: z.string().min(1),
-  title: z.string().min(1),
-  completed: z.boolean(),
-  createdAt: z.string().min(1),
-})
-```
+Prefer **1–3 short lines**. Dense is fine; long is not.
+
+### JS / TS format
 
 ```ts
-// Create-task inputs - raw title from UI plus optional id factory for tests.
-export function createTask(titleInput: string, idFactory: () => string = () => crypto.randomUUID()) {
+// Composicion del preview - srcdoc deja el HTML editable y el CSS como fuente hermana;
+// inyectar <style> antes de </head> evita un segundo fetch en cada tecla.
+function buildSrcdoc(htmlText, cssText) {
   // ...
 }
 ```
 
-```ts
-// Form props - submit callback and validation error from parent feature hook.
-type TaskFormProps = {
-  onSubmit: (title: string) => boolean
-  error: string | null
-}
+### CSS format
+
+```css
+/*
+  Presets hard-stop - from%/to% fija bandas planas para que la cantidad de franjas sea un eje;
+  --c* queda en el tema asi paleta y posterizado no se duplican en reglas aparte.
+*/
+.grad-surface--stops-5 { /* ... */ }
 ```
 
-```ts
-// Mutation handlers - create/edit/toggle/remove wired to domain operations.
-const create = useCallback(/* ... */)
-```
+## 3. Visual separation
 
-## 3. Visual separation rules
-
-- One blank line between sections; do not glue unrelated blocks together.
-- Do not put a wall of uncommented functions/props in a row.
-- Prefer grouping related params in a props/options type with a section comment, rather than a long unexplained parameter list.
-- Comments stay abbreviated (one line). Do not narrate every statement inside the block.
-- Comment language: **English** (code artifacts).
+- One blank line between sections; do not glue unrelated blocks
+- Do not leave a wall of uncommented functions / rule groups
+- Group related params under one commented block when that clarifies the contract
+- **Comment language (mandatory): Spanish without diacritics** — avoid `á é í ó ú ü ñ` and punctuation like `… – ≈` so files stay ASCII-safe. Applies to TS/JS/HTML/CSS module comments and the file-level DECISION block. Keep identifiers, APIs, and code tokens in their real names (`srcdoc`, `--grad-speed`, `fetch`, etc.)
 
 ## 4. Folder modularity (still required)
 
-Keep presentation / features-services / infrastructure / contracts in separate folders/files. Section comments document **blocks inside** those files.
+Presentation / features-services / infrastructure / contracts stay in separate folders/files. Section comments document **blocks inside** those files.
 
 ## 5. Skip list
 
-Same as author signature: skip `node_modules/`, `.next/`, `dist/`, `build/`, `coverage/`, generated ambient stubs when empty, and non-JS/TS formats.
+Skip `node_modules/`, `.next/`, `dist/`, `build/`, `coverage/`, generated stubs, and files the toolchain owns/overwrites.

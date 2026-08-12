@@ -1,0 +1,36 @@
+---
+description: Author signature on new HTML and CSS source files
+globs: "**/*.{html,css}"
+alwaysApply: false
+---
+
+# Author file signature (HTML / CSS)
+
+When **creating** a new `.html` or `.css` file **anywhere in this repository**, add the studio author signature as a **top-of-file comment**.
+
+## Exact signatures
+
+### CSS (line 1)
+
+```css
+/*'bosquestudio','Mariano Montini / Rocio Mio'*/
+```
+
+### HTML (immediately after `<!doctype html>`)
+
+```html
+<!doctype html>
+<!--'bosquestudio','Mariano Montini / Rocio Mio'-->
+```
+
+Keep `<!doctype html>` as the first line for compatibility; the signature comment is the next line.
+
+## Rules
+
+- Match the signature **exactly** (spacing and quotes as shown).
+- Place it at the top before other file comments, imports/`<link>` notes, or section blocks.
+- After the signature, keep visually separated sections with abbreviated comments (`/* What - does */` in CSS; `<!-- What - does -->` in HTML when non-trivial).
+- Do **not** add this signature when only editing an existing file that already has content (unless the file is brand-new / empty in the same change).
+- If a brand-new HTML/CSS file is created without the signature, add it before finishing the change.
+- **Skip** generated or tool-owned outputs (`dist/`, `build/`, `.next/`, `coverage/`, `node_modules/`, and scaffolds that overwrite owned files).
+- This signature is for **HTML and CSS only**. For TS/JS/JSX/TSX use `author-js-ts-file-signature.mdc` (different string).

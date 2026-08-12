@@ -1,0 +1,59 @@
+<!doctype html>
+<!--'bosquestudio','Mariano Montini / Rocio Mio'-->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gradient study — live lab</title>
+    <link rel="stylesheet" href="./lab.css" />
+  </head>
+  <!--
+    Lab UI - preview = index.html real; editores abren index.html + styles.css.
+    El estudio canonico no se reemplaza: solo se parcha el DOM del iframe.
+  -->
+  <body class="lab">
+    <!-- Aviso file: - el browser bloquea fetch/contentDocument entre archivos locales. -->
+    <aside id="origin-gate" class="lab-gate" hidden>
+      <p>
+        El lab no puede leer <code>index.html</code> / <code>styles.css</code> ni
+        parchar el preview bajo <code>file:</code>: cada archivo es un origen
+        opaco (seguridad del browser).
+      </p>
+      <pre>cd apps/css-gradient-study
+npx --yes serve . -p 5185</pre>
+      <p>Despues abri <code>http://localhost:5185/lab.html</code></p>
+    </aside>
+
+    <section class="lab-preview" aria-label="Preview">
+      <header class="lab-bar">
+        <span>Preview</span>
+        <span class="lab-hint">index.html</span>
+      </header>
+      <iframe
+        id="preview"
+        class="lab-frame"
+        title="Gradient preview"
+        src="./index.html"
+      ></iframe>
+    </section>
+
+    <section class="lab-editors" aria-label="Editores">
+      <div class="lab-editor">
+        <header class="lab-bar">
+          <label for="html-editor">HTML</label>
+          <span class="lab-hint">abre index.html</span>
+        </header>
+        <textarea id="html-editor" spellcheck="false" autocomplete="off"></textarea>
+      </div>
+      <div class="lab-editor">
+        <header class="lab-bar">
+          <label for="css-editor">CSS</label>
+          <span class="lab-hint">abre styles.css</span>
+        </header>
+        <textarea id="css-editor" spellcheck="false" autocomplete="off"></textarea>
+      </div>
+    </section>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

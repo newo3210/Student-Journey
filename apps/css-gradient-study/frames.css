@@ -1,0 +1,225 @@
+/*'bosquestudio','Mariano Montini / Rocio Mio'*/
+
+/*
+  Frames gallery - mascara el gradiente (.grad-surface) dentro de
+  barras, dialogs y chips. No redefine el sistema de degrade
+  (eso sigue en styles.css); solo da forma y recorte a cada ejemplo.
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body.frames-page {
+  min-height: 100%;
+  min-height: 100dvh;
+  padding: 1.25rem;
+  background:
+    radial-gradient(ellipse 70% 40% at 10% 0%, #2a241c 0%, transparent 55%),
+    #161410;
+  color: #e8e2d6;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.frames-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  align-content: start;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.sample {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem 0.9rem 1rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.03);
+}
+
+.sample h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(232 226 214 / 0.65);
+}
+
+.sample p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgb(232 226 214 / 0.55);
+}
+
+/* Track generico - recorta el fill con gradiente animado. */
+.track {
+  width: 100%;
+  overflow: hidden;
+  background: rgb(0 0 0 / 0.35);
+}
+
+.track-thin {
+  height: 6px;
+  border-radius: 999px;
+}
+
+.track-thick {
+  height: 16px;
+  border-radius: 10px;
+}
+
+.track-pill {
+  height: 28px;
+  border-radius: 999px;
+}
+
+.track-vert {
+  width: 14px;
+  height: 140px;
+  border-radius: 999px;
+}
+
+.fill {
+  height: 100%;
+  width: 62%;
+}
+
+.fill-wide {
+  width: 78%;
+}
+
+.fill-mid {
+  width: 45%;
+}
+
+.fill-vert {
+  width: 100%;
+  height: 58%;
+  margin-top: auto;
+}
+
+.track-vert {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Dialog - el cuerpo entero es mascara del gradiente. */
+.dialog {
+  overflow: hidden;
+  border-radius: 14px;
+  min-height: 150px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.dialog-body {
+  padding: 1rem 1.05rem 0.35rem;
+}
+
+.dialog-body strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 1rem;
+}
+
+.dialog-body span {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  padding: 0.65rem 0.85rem 0.85rem;
+}
+
+.dialog-actions button {
+  appearance: none;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  background: rgb(0 0 0 / 0.22);
+  color: inherit;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: default;
+}
+
+/* Chip / badge strip */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.chip {
+  overflow: hidden;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  min-width: 4.5rem;
+  text-align: center;
+}
+
+/* Card panel */
+.card {
+  overflow: hidden;
+  border-radius: 12px;
+  min-height: 110px;
+  padding: 1rem;
+  display: grid;
+  align-content: end;
+  gap: 0.25rem;
+}
+
+.card strong {
+  font-size: 0.95rem;
+}
+
+.card span {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+/* Ring-ish meter via conic clipped in a circle */
+.ring {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0.25rem auto;
+  display: grid;
+  place-items: center;
+}
+
+.ring-hole {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #161410;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.sample-span-2 {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 700px) {
+  .sample-span-2 {
+    grid-column: span 2;
+  }
+}

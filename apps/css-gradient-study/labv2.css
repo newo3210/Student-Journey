@@ -1,0 +1,255 @@
+/*'bosquestudio','Mariano Montini / Rocio Mio'*/
+
+/*
+  Lab v2 chrome - preview + controles + codigo generado.
+  No es el sistema de gradiente (eso sigue en styles.css).
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body.labv2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.85fr);
+  grid-template-rows: 1fr;
+  background: #1a1814;
+  color: #e8e2d6;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+body.labv2.is-blocked {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 960px) {
+  body.labv2 {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(38vh, 1fr) minmax(50vh, 1.1fr);
+  }
+}
+
+.lab-gate {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid rgb(255 200 120 / 0.25);
+  background: #2a2118;
+  color: #f3e6d0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.lab-gate[hidden] {
+  display: none;
+}
+
+.lab-gate pre {
+  margin: 0.65rem 0;
+  padding: 0.75rem 0.9rem;
+  overflow: auto;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: #141210;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.lab-preview,
+.lab-side,
+.lab-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.lab-preview {
+  border-right: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.lab-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(232 226 214 / 0.72);
+  background: #12100e;
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+}
+
+.lab-hint {
+  opacity: 0.55;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.lab-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: #000;
+}
+
+.lab-side {
+  border-left: 1px solid rgb(255 255 255 / 0.04);
+}
+
+.lab-panel {
+  flex: 1;
+  min-height: 0;
+}
+
+.lab-panel + .lab-panel {
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+  flex: 1.15;
+}
+
+.lab-controls {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  overflow: auto;
+  background: #141210;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+.field span {
+  color: rgb(232 226 214 / 0.7);
+}
+
+.field select,
+.field input[type="range"] {
+  width: 100%;
+  accent-color: #c4a574;
+}
+
+.field select {
+  padding: 0.3rem 0.4rem;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 0;
+  background: #1c1915;
+  color: #f0ebe3;
+  font: inherit;
+}
+
+.field output {
+  min-width: 3.2rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: rgb(232 226 214 / 0.55);
+  font-size: 0.75rem;
+}
+
+/* Paleta hex - inputs por slot c1..c8 segun el preset activo. */
+.palette-block {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.35rem 0 0.15rem;
+  border-top: 1px solid rgb(255 255 255 / 0.06);
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+}
+
+.palette-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(232 226 214 / 0.7);
+}
+
+.palette-grid {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.swatch {
+  display: grid;
+  grid-template-columns: 2rem 2.2rem 1fr;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+}
+
+.swatch.is-idle {
+  opacity: 0.42;
+}
+
+.swatch input[type="color"] {
+  width: 2rem;
+  height: 1.55rem;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.15);
+  background: transparent;
+  cursor: pointer;
+}
+
+.swatch input[type="text"] {
+  width: 100%;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: #1c1915;
+  color: #f0ebe3;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+}
+
+.lab-btn {
+  appearance: none;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  background: #1c1915;
+  color: #e8e2d6;
+  padding: 0.25rem 0.55rem;
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.lab-btn:hover {
+  background: #252018;
+}
+
+.lab-code-out {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  overflow: auto;
+  border: 0;
+  resize: none;
+  outline: none;
+  background: #141210;
+  color: #f0ebe3;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.lab-code-out:focus {
+  background: #181612;
+}

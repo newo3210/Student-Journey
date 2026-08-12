@@ -1,0 +1,57 @@
+<!doctype html>
+<!--'bosquestudio','Mariano Montini / Rocio Mio'-->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gradient study</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <!--
+    Config de superficie - el body es el canvas del gradiente.
+    Combina una clase de cada grupo; velocidad va en style (0 lento ... 100 rapido).
+      tipo:   --linear | --radial | --conic
+      tema:   --indigo | --silver
+      colores: --colores-2 ... --colores-8   (cuantos tonos entran al degrade)
+      pan:     --pan-diag | --pan-x | --pan-y | --pan-rev
+      estado:  is-running | is-stopped   (click en el canvas alterna)
+      speed:   style="--grad-speed: 0..100"
+    El footer debe listar lo mismo que las clases activas (documentacion visual).
+  -->
+  <body
+    class="grad-surface grad-surface--linear grad-surface--indigo grad-surface--colores-5 grad-surface--pan-diag is-running"
+    style="--grad-speed: 50"
+  >
+    <!-- Labels de config - espejo legible de la combinacion activa arriba. -->
+    <footer class="config">
+      <span>linear</span>
+      <span>indigo</span>
+      <span>5 colores</span>
+      <span>pan diag</span>
+      <span>speed 50</span>
+      <span>running</span>
+    </footer>
+
+    <!--
+      Motion por click - solo alterna is-running / is-stopped en el body.
+      El freno real esta en styles.css: stopped usa animation-play-state
+      paused sobre la misma animacion, asi el pan se congela donde estaba
+      (no animation:none, que reseteaba al inicio del keyframe).
+      El ultimo span del footer refleja running o stopped.
+    -->
+    <script>
+      document.addEventListener('click', function () {
+        var surface = document.body
+        if (!surface.classList.contains('grad-surface')) return
+
+        var willRun = !surface.classList.contains('is-running')
+        surface.classList.toggle('is-running', willRun)
+        surface.classList.toggle('is-stopped', !willRun)
+
+        var labels = surface.querySelectorAll('.config span')
+        var last = labels[labels.length - 1]
+        if (last) last.textContent = willRun ? 'running' : 'stopped'
+      })
+    </script>
+  </body>
+</html>

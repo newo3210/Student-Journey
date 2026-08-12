@@ -1,0 +1,131 @@
+<!doctype html>
+<!--'bosquestudio','Mariano Montini / Rocio Mio'-->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gradient study — lab v2</title>
+    <link rel="stylesheet" href="./labv2.css" />
+  </head>
+  <!--
+    Lab v2 - version con controles manuales y update de preview
+    el codigo se puede editar a mano o usando los controles. 
+    Se puede copiar  y llevar al body del html principal.
+  -->
+  <body class="labv2">
+    <aside id="origin-gate" class="lab-gate" hidden>
+      <p>
+        Lab v2 necesita http: bajo <code>file:</code> no se puede leer ni
+        parchar el preview (origenes opacos).
+      </p>
+      <pre>cd apps/css-gradient-study
+npx --yes serve . -p 5185</pre>
+      <p>Despues abri <code>http://localhost:5185/labv2.html</code></p>
+    </aside>
+
+    <section class="lab-preview" aria-label="Preview">
+      <header class="lab-bar">
+        <span>Preview</span>
+      </header>
+      <iframe
+        id="preview"
+        class="lab-frame"
+        title="Gradient preview"
+        src="./index.html"
+      ></iframe>
+    </section>
+
+    <aside class="lab-side" aria-label="Controles y codigo">
+      <section class="lab-panel">
+        <header class="lab-bar">
+          <span>Controles</span>
+        </header>
+        <div class="lab-controls" id="controls">
+          <label class="field">
+            <span>Tipo</span>
+            <select id="ctrl-type">
+              <option value="linear">linear</option>
+              <option value="radial">radial</option>
+              <option value="conic">conic</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Tema</span>
+            <select id="ctrl-theme">
+              <option value="indigo">indigo</option>
+              <option value="silver">silver</option>
+            </select>
+          </label>
+
+          <div class="palette-block">
+            <div class="palette-head">
+              <span>Paleta hex</span>
+              <button type="button" id="btn-reset-palette" class="lab-btn">
+                Reset preset
+              </button>
+            </div>
+            <div class="palette-grid" id="palette-grid"></div>
+          </div>
+
+          <label class="field">
+            <span>Colores</span>
+            <input id="ctrl-colores" type="range" min="2" max="8" value="5" />
+            <output id="out-colores" for="ctrl-colores">5</output>
+          </label>
+          <label class="field">
+            <span>Pan</span>
+            <select id="ctrl-pan">
+              <option value="diag">diag</option>
+              <option value="x">x</option>
+              <option value="y">y</option>
+              <option value="rev">rev</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Estado</span>
+            <select id="ctrl-motion">
+              <option value="running">running</option>
+              <option value="stopped">stopped</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Velocidad</span>
+            <input id="ctrl-speed" type="range" min="0" max="100" value="50" />
+            <output id="out-speed" for="ctrl-speed">50</output>
+          </label>
+          <label class="field">
+            <span>Angulo</span>
+            <input id="ctrl-angle" type="range" min="0" max="360" value="125" />
+            <output id="out-angle" for="ctrl-angle">125deg</output>
+          </label>
+          <label class="field">
+            <span>Origen X</span>
+            <input id="ctrl-ox" type="range" min="0" max="100" value="50" />
+            <output id="out-ox" for="ctrl-ox">50%</output>
+          </label>
+          <label class="field">
+            <span>Origen Y</span>
+            <input id="ctrl-oy" type="range" min="0" max="100" value="50" />
+            <output id="out-oy" for="ctrl-oy">50%</output>
+          </label>
+        </div>
+      </section>
+
+      <section class="lab-panel lab-code">
+        <header class="lab-bar">
+          <span>Codigo generado</span>
+          <button type="button" id="btn-copy" class="lab-btn">Copiar</button>
+        </header>
+        <textarea
+          id="code-out"
+          class="lab-code-out"
+          spellcheck="false"
+          autocomplete="off"
+          aria-label="Codigo HTML editable"
+        ></textarea>
+      </section>
+    </aside>
+
+    <script src="./labv2.js"></script>
+  </body>
+</html>

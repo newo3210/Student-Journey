@@ -1,0 +1,147 @@
+/*'bosquestudio','Mariano Montini / Rocio Mio'*/
+
+/*
+  Lab chrome - layout del editor live (preview + textareas).
+  No es el gradiente: eso vive en styles.css y se inyecta al iframe.
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body.lab {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.9fr);
+  grid-template-rows: 1fr;
+  background: #1a1814;
+  color: #e8e2d6;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+body.lab.is-blocked {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+/* Gate file: - bloquea el lab y explica el serve por http. */
+.lab-gate {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid rgb(255 200 120 / 0.25);
+  background: #2a2118;
+  color: #f3e6d0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.lab-gate[hidden] {
+  display: none;
+}
+
+.lab-gate p {
+  margin: 0 0 0.65rem;
+}
+
+.lab-gate pre {
+  margin: 0 0 0.65rem;
+  padding: 0.75rem 0.9rem;
+  overflow: auto;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: #141210;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.lab-gate code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.88em;
+}
+
+@media (max-width: 900px) {
+  body.lab {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(40vh, 1fr) minmax(45vh, 1fr);
+  }
+}
+
+.lab-preview,
+.lab-editors,
+.lab-editor {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.lab-preview {
+  border-right: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.lab-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(232 226 214 / 0.72);
+  background: #12100e;
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+}
+
+.lab-hint {
+  opacity: 0.55;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.lab-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: #000;
+}
+
+.lab-editors {
+  border-left: 1px solid rgb(255 255 255 / 0.04);
+}
+
+.lab-editor {
+  flex: 1;
+  min-height: 0;
+}
+
+.lab-editor + .lab-editor {
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.lab-editor textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 0;
+  resize: none;
+  outline: none;
+  background: #141210;
+  color: #f0ebe3;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  tab-size: 2;
+}
+
+.lab-editor textarea:focus {
+  background: #181612;
+}

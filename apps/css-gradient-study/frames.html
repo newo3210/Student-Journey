@@ -1,0 +1,99 @@
+<!doctype html>
+<!--'bosquestudio','Mariano Montini / Rocio Mio'-->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gradient frames</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./frames.css" />
+  </head>
+  <!--
+    Galeria de uso - el degrade vive enmascarado dentro de frames
+    (barras, dialog, chips, card, anillo). data-grad marca los targets
+    que lab-frames.js muta con los mismos controles del lab v2.
+  -->
+  <body class="frames-page">
+    <main class="frames-grid">
+      <article class="sample">
+        <h2>Progress thin</h2>
+        <div class="track track-thin">
+          <div
+            class="fill fill-wide grad-surface"
+            data-grad
+            aria-hidden="true"
+          ></div>
+        </div>
+        <p>Barra fina pill — fill 78%</p>
+      </article>
+
+      <article class="sample">
+        <h2>Progress thick</h2>
+        <div class="track track-thick">
+          <div
+            class="fill fill-mid grad-surface"
+            data-grad
+            aria-hidden="true"
+          ></div>
+        </div>
+        <p>Barra gruesa — fill 45%</p>
+      </article>
+
+      <article class="sample">
+        <h2>Progress pill</h2>
+        <div class="track track-pill">
+          <div class="fill fill-wide grad-surface" data-grad aria-hidden="true"></div>
+        </div>
+        <p>Track alto redondeado — fill 78%</p>
+      </article>
+
+      <article class="sample">
+        <h2>Progress vertical</h2>
+        <div class="track track-vert">
+          <div class="fill fill-vert grad-surface" data-grad aria-hidden="true"></div>
+        </div>
+        <p>Columna — fill 58%</p>
+      </article>
+
+      <article class="sample sample-span-2">
+        <h2>Dialog</h2>
+        <div class="dialog grad-surface" data-grad>
+          <div class="dialog-body">
+            <strong>Sync completo</strong>
+            <span>El degrade queda recortado por el radio del dialog.</span>
+          </div>
+          <div class="dialog-actions">
+            <button type="button">Cancelar</button>
+            <button type="button">OK</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="sample">
+        <h2>Card</h2>
+        <div class="card grad-surface" data-grad>
+          <strong>Panel</strong>
+          <span>Frame rectangular con overflow hidden.</span>
+        </div>
+      </article>
+
+      <article class="sample">
+        <h2>Chips</h2>
+        <div class="chip-row">
+          <div class="chip grad-surface" data-grad>Live</div>
+          <div class="chip grad-surface" data-grad>Pending</div>
+          <div class="chip grad-surface" data-grad>Done</div>
+        </div>
+        <p>Badges pill con el mismo sistema.</p>
+      </article>
+
+      <article class="sample">
+        <h2>Ring meter</h2>
+        <div class="ring grad-surface" data-grad>
+          <div class="ring-hole">62%</div>
+        </div>
+        <p>Circulo que enmascara el degrade (conic queda bien aca).</p>
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,335 @@
+/*'bosquestudio','Mariano Montini / Rocio Mio'*/
+
+/*
+  ============================================================
+  DECISION GENERAL
+  ------------------------------------------------------------
+  Objetivo: un gradiente a pantalla completa con pan animado, y
+  poder variar movimiento, cantidad de colores del degrade y velocidad.
+
+  Como se resolvio:
+  Si metiamos cada combinacion en un solo bloque (tipo+color+colores
+  +direccion), el CSS se iba de las manos. La salida fue partir el
+  problema en ejes que se ensamblan en el body:
+
+    tipo      -> geometria (linear / radial / conic)
+    tema      -> paleta (--c1...--c8)
+    colores   -> cuantos colores de la paleta entran al degrade (fundido)
+    pan       -> hacia donde viaja el recorte
+    estado    -> anima o queda quieto
+    velocidad -> 0-100 que alimenta la duracion
+
+  El degrade es clasico: cada --tone-* es un color de control y el browser
+  funde entre medias. Mas colores = curva mas fina. El pan es una sola
+  animacion; la direccion solo mueve tokens from/to. La velocidad es un
+  numero comodo que un calc pasa a segundos.
+
+  Tokens que vas a ver:
+  --c1...--c8 (paleta), --tone-1...--tone-8 (colores activos del degrade),
+  --grad-angle / origin / size, --pan-from/to-*, --grad-speed / --grad-duration
+  ============================================================
+*/
+
+/* Reset de caja - que padding y border no agranden el layout. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* html al 100% - el body puede estirarse al viewport sin rarezas. */
+html {
+  height: 100%;
+}
+
+/*
+  Cascara .grad-surface - tokens y base para cualquier frame (barra, dialog, etc.).
+  El full-bleed de pagina queda solo en body.grad-surface mas abajo.
+*/
+.grad-surface {
+  --grad-angle: 125deg;
+  --grad-origin-x: 50%;
+  --grad-origin-y: 50%;
+  --grad-size: 140% 120%;
+  --pan-from-x: 0%;
+  --pan-from-y: 40%;
+  --pan-to-x: 100%;
+  --pan-to-y: 60%;
+  --grad-speed: 50;
+  --grad-duration: calc((100 - var(--grad-speed)) * 0.09s + 1s);
+
+  overflow: hidden;
+  color: #fff;
+  background-color: transparent;
+  background-repeat: no-repeat;
+}
+
+/*
+  Pagina full-bleed - solo cuando el canvas es el body del estudio.
+*/
+body.grad-surface {
+  margin: 0;
+  min-height: 100%;
+  min-height: 100dvh;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+/*
+  Tipos: misma rampa --tone-*, distinta forma del degrade.
+  Linear por angulo, radial desde un origen, conic en barrido.
+  Los 8 slots siempre estan definidos por --colores-N (sin transparent).
+*/
+.grad-surface--linear {
+  background-image: linear-gradient(
+    var(--grad-angle),
+    var(--tone-1),
+    var(--tone-2),
+    var(--tone-3),
+    var(--tone-4),
+    var(--tone-5),
+    var(--tone-6),
+    var(--tone-7),
+    var(--tone-8)
+  );
+}
+
+.grad-surface--radial {
+  background-image: radial-gradient(
+    ellipse var(--grad-size) at var(--grad-origin-x) var(--grad-origin-y),
+    var(--tone-1),
+    var(--tone-2),
+    var(--tone-3),
+    var(--tone-4),
+    var(--tone-5),
+    var(--tone-6),
+    var(--tone-7),
+    var(--tone-8)
+  );
+}
+
+.grad-surface--conic {
+  background-image: conic-gradient(
+    from var(--grad-angle) at var(--grad-origin-x) var(--grad-origin-y),
+    var(--tone-1),
+    var(--tone-2),
+    var(--tone-3),
+    var(--tone-4),
+    var(--tone-5),
+    var(--tone-6),
+    var(--tone-7),
+    var(--tone-8)
+  );
+}
+
+/*
+  Temas indigo y silver: paleta en hex (--c1...--c8) y color de texto.
+  --colores-N elige cuantos de esos entran al degrade.
+  Dos polos: oscuro y claro.
+*/
+.grad-surface--indigo {
+  --c1: #3f29ae;
+  --c2: #cc2fda;
+  --c3: #e1476d;
+  --c4: #ca7a2b;
+  --c5: #66a329;
+  --c6: #2c9658;
+  --c7: #2c7c8c;
+  --c8: #29447a;
+  color: #fff;
+}
+
+.grad-surface--silver {
+  --c1: #f8fafc;
+  --c2: #e2e8f0;
+  --c3: #cbd5e1;
+  --c4: #f1f5f9;
+  --c5: #94a3b8;
+  --c6: #e2e8f0;
+  --c7: #cbd5e1;
+  --c8: #64748b;
+  color: #1f2937;
+}
+
+/*
+  Cantidad de colores del degrade (--colores-2 ... --colores-8).
+  El tema solo define la paleta (--c1...--c8); estas clases deciden
+  cuantos de esos tonos entran a --tone-1...--tone-8, que es lo que
+  realmente consume linear/radial/conic. Ejemplo: --colores-5 usa
+  c1..c5 y repite c5 en tone-6..8 para no dejar huecos transparentes
+  (que se veian negros). Mas N = mas puntos de color y fundido mas fino.
+  En el body va UNA sola clase de este grupo.
+*/
+.grad-surface--colores-2 {
+  --tone-1: var(--c1);
+  --tone-2: var(--c2);
+  --tone-3: var(--c2);
+  --tone-4: var(--c2);
+  --tone-5: var(--c2);
+  --tone-6: var(--c2);
+  --tone-7: var(--c2);
+  --tone-8: var(--c2);
+}
+
+.grad-surface--colores-3 {
+  --tone-1: var(--c1);
+  --tone-2: var(--c2);
+  --tone-3: var(--c3);
+  --tone-4: var(--c3);
+  --tone-5: var(--c3);
+  --tone-6: var(--c3);
+  --tone-7: var(--c3);
+  --tone-8: var(--c3);
+}
+
+.grad-surface--colores-4 {
+  --tone-1: var(--c1);
+  --tone-2: var(--c2);
+  --tone-3: var(--c3);
+  --tone-4: var(--c4);
+  --tone-5: var(--c4);
+  --tone-6: var(--c4);
+  --tone-7: var(--c4);
+  --tone-8: var(--c4);
+}
+
+.grad-surface--colores-5 {
+  --tone-1: var(--c1);
+  --tone-2: var(--c2);
+  --tone-3: var(--c3);
+  --tone-4: var(--c4);
+  --tone-5: var(--c5);
+  --tone-6: var(--c5);
+  --tone-7: var(--c5);
+  --tone-8: var(--c5);
+}
+
+.grad-surface--colores-6 {
+  --tone-1: var(--c1);
+  --tone-2: var(--c2);
+  --tone-3: var(--c3);
+  --tone-4: var(--c4);
+  --tone-5: var(--c5);
+  --tone-6: var(--c6);
+  --tone-7: var(--c6);
+  --tone-8: var(--c6);
+}
+
+.grad-surface--colores-7 {
+  --tone-1: var(--c1);
+  --tone-2: var(--c2);
+  --tone-3: var(--c3);
+  --tone-4: var(--c4);
+  --tone-5: var(--c5);
+  --tone-6: var(--c6);
+  --tone-7: var(--c7);
+  --tone-8: var(--c7);
+}
+
+.grad-surface--colores-8 {
+  --tone-1: var(--c1);
+  --tone-2: var(--c2);
+  --tone-3: var(--c3);
+  --tone-4: var(--c4);
+  --tone-5: var(--c5);
+  --tone-6: var(--c6);
+  --tone-7: var(--c7);
+  --tone-8: var(--c8);
+}
+
+/*
+  Running vs stopped (frenar el pan, no resetearlo).
+  Las dos clases comparten la misma animation: grad-pan; solo cambia
+  animation-play-state. Asi el browser conserva el background-position
+  actual. Si se usara animation: none (o sacar la animacion), el pan
+  volvia al frame 0: eso es un reset, no un freeze. running = play;
+  stopped = paused. El click del script en index.html solo alterna clases.
+*/
+.grad-surface.is-running,
+.grad-surface.is-stopped {
+  background-size: 220% 220%;
+  animation: grad-pan var(--grad-duration) ease-in-out infinite;
+}
+
+.grad-surface.is-running {
+  animation-play-state: running;
+}
+
+.grad-surface.is-stopped {
+  animation-play-state: paused;
+}
+
+/*
+  Un solo keyframe de pan. La direccion no inventa animaciones nuevas:
+  solo cambia a donde van from y to.
+*/
+@keyframes grad-pan {
+  0%,
+  100% {
+    background-position: var(--pan-from-x) var(--pan-from-y);
+  }
+  50% {
+    background-position: var(--pan-to-x) var(--pan-to-y);
+  }
+}
+
+/*
+  Direcciones: diag, eje X, eje Y, o la diagonal al reves.
+  Pisan --pan-from/to; el ritmo sigue en --grad-speed.
+*/
+.grad-surface--pan-diag {
+  --pan-from-x: 0%;
+  --pan-from-y: 40%;
+  --pan-to-x: 100%;
+  --pan-to-y: 60%;
+}
+
+.grad-surface--pan-x {
+  --pan-from-x: 0%;
+  --pan-from-y: 50%;
+  --pan-to-x: 100%;
+  --pan-to-y: 50%;
+}
+
+.grad-surface--pan-y {
+  --pan-from-x: 50%;
+  --pan-from-y: 0%;
+  --pan-to-x: 50%;
+  --pan-to-y: 100%;
+}
+
+.grad-surface--pan-rev {
+  --pan-from-x: 100%;
+  --pan-from-y: 60%;
+  --pan-to-x: 0%;
+  --pan-to-y: 40%;
+}
+
+/*
+  Franja de abajo: el unico texto, con la config que esta activa.
+  Fija al borde y sin pointer-events para no tapar el fondo.
+*/
+.config {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin: 0;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.72;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.28), transparent);
+  pointer-events: none;
+}
+
+/* En silver el velo oscuro no ayuda: pasamos a uno claro. */
+.grad-surface--silver .config {
+  background: linear-gradient(to top, rgb(255 255 255 / 0.45), transparent);
+  opacity: 0.85;
+}
