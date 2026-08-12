@@ -60,13 +60,16 @@ const PREFIXES = {
 // Timing codigo -> preview - debounce para no parsear en cada tecla cruda.
 const CODE_SYNC_MS = 220
 
-// Puentes DOM.
+// Puentes DOM del shell - iframe de frames.html, gate file:, panel de codigo
+// y botones de copiar / reset de paleta.
 const preview = document.getElementById('preview')
 const originGate = document.getElementById('origin-gate')
 const codeOut = document.getElementById('code-out')
 const btnCopy = document.getElementById('btn-copy')
 const btnResetPalette = document.getElementById('btn-reset-palette')
 const paletteGrid = document.getElementById('palette-grid')
+
+// Controles de ejes - selects/ranges del panel (tipo, tema, pan, motion, etc.).
 const ctrl = {
   type: document.getElementById('ctrl-type'),
   theme: document.getElementById('ctrl-theme'),
@@ -78,6 +81,8 @@ const ctrl = {
   ox: document.getElementById('ctrl-ox'),
   oy: document.getElementById('ctrl-oy'),
 }
+
+// Outputs de sliders - labels numericos al lado de colores/speed/angulo/origen.
 const out = {
   colores: document.getElementById('out-colores'),
   speed: document.getElementById('out-speed'),
@@ -86,14 +91,18 @@ const out = {
   oy: document.getElementById('out-oy'),
 }
 
+// Flags de sync - lastTheme evita pisar hex custom; timers/suppress
+// coordinan edicion manual del codigo con el write del panel.
 let lastTheme = state.theme
 let codeSyncTimer = 0
 let suppressCodeWrite = false
 
+// Origen file: - modulo de seguridad: detecta protocol opaco local.
 function isFileOrigin() {
   return window.location.protocol === 'file:'
 }
 
+// Gate UI - bloquea lab frames y pide serve por http.
 function showOriginGate() {
   if (originGate) originGate.hidden = false
   document.body.classList.add('is-blocked')
@@ -101,6 +110,7 @@ function showOriginGate() {
   codeOut.value = '/* bloqueado bajo file: — usa npx serve */'
 }
 
+// Acceso al documento del preview - contentDocument de frames.html (same-origin).
 function getPreviewDoc() {
   try {
     return preview.contentDocument
@@ -109,16 +119,19 @@ function getPreviewDoc() {
   }
 }
 
+// Util de clases (eje fijo) - limpia variantes exactas antes de poner la activa.
 function stripClasses(el, classNames) {
   classNames.forEach((name) => el.classList.remove(name))
 }
 
+// Util de clases (eje variable) - limpia por prefijo (--colores-*, --pan-*).
 function stripPrefixed(el, prefix) {
   ;[...el.classList].forEach((name) => {
     if (name.startsWith(prefix)) el.classList.remove(name)
   })
 }
 
+// Util de paleta - normaliza #rgb/#rrggbb; si falla, conserva el hex anterior.
 function normalizeHex(value, fallback) {
   const raw = String(value).trim()
   if (/^#[0-9a-fA-F]{6}$/.test(raw)) return raw.toLowerCase()
@@ -131,10 +144,13 @@ function normalizeHex(value, fallback) {
   return fallback
 }
 
+// Preset -> state.palette - copia defensiva de PRESET_PALETTES[theme].
 function loadPaletteFromPreset(theme) {
   state.palette = [...PRESET_PALETTES[theme]]
 }
 
+// UI de paleta hex - monta swatches c1..c8 en #palette-grid; idle si
+// el slot queda fuera de --colores-N. Cada input escribe state y re-render.
 function mountPaletteInputs() {
   paletteGrid.replaceChildren()
 

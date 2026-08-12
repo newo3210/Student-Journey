@@ -1,94 +1,94 @@
 # CSS Gradient Study (portfolio)
 
-Gradiente a pantalla completa con pan animado. El estudio canonico es `index.html` + `styles.css`. Labs opcionales para previsualizar y customizar sin romper el canon.
+Full-bleed animated gradient with pan. The canonical study is `index.html` + `styles.css`. Optional labs preview and customize without breaking that canon.
 
-## Abrir el estudio
+## Open the study
 
-Tiene que ser **http** (no abrir labs con doble clic / `file:`). Bajo `file:` el browser trata cada archivo como origen opaco y bloquea `fetch` + acceso al DOM del iframe.
+Must be served over **http** (do not open labs via double-click / `file:`). Under `file:`, the browser treats each file as an opaque origin and blocks `fetch` plus iframe DOM access.
 
 ```bash
 cd apps/css-gradient-study
 npx --yes serve . -p 5185
 ```
 
-| URL | Que es |
+| URL | What it is |
 |---|---|
-| `http://localhost:5185/` | Estudio (`index.html` + `styles.css`) |
-| `http://localhost:5185/lab.html` | Lab v1: editores de texto HTML/CSS + preview |
-| `http://localhost:5185/labv2.html` | Lab v2: controles + codigo (fondo full-bleed) |
-| `http://localhost:5185/lab-frames.html` | Lab frames: mismos controles; degrade en barras/dialogs/chips |
+| `http://localhost:5185/` | Study (`index.html` + `styles.css`) |
+| `http://localhost:5185/lab.html` | Lab v1: HTML/CSS text editors + preview |
+| `http://localhost:5185/labv2.html` | Lab v2: controls + code (full-bleed surface) |
+| `http://localhost:5185/lab-frames.html` | Lab frames: same controls; gradient masked in bars/dialogs/chips |
 
 ## Lab frames
 
-Mismos controles que lab v2. El preview es `frames.html`: el gradiente se **enmascara** dentro de frames de distinto tamaño/forma (progress thin/thick/pill/vertical, dialog, card, chips, ring).
+Same controls as lab v2. Preview is `frames.html`: the gradient is **masked** inside frames of different sizes/shapes (progress thin/thick/pill/vertical, dialog, card, chips, ring).
 
-| Archivo | Rol |
+| File | Role |
 |---|---|
-| `frames.html` + `frames.css` | Galeria de ejemplos (`[data-grad]`) |
-| `lab-frames.html` + `lab-frames.js` | Controles + codigo (chrome UI = `labv2.css`) |
+| `frames.html` + `frames.css` | Example gallery (`[data-grad]`) |
+| `lab-frames.html` + `lab-frames.js` | Controls + code (chrome UI = `labv2.css`) |
 
-El codigo generado exporta un ejemplo de **progress thin** listo para copiar. `styles.css` ahora soporta `.grad-surface` como componente (no solo `body`).
+Generated code exports a **progress thin** sample ready to copy. `styles.css` supports `.grad-surface` as a component (not only on `body`).
 
 ## Lab v2
 
-UI de controles sobre el estudio **sin escribir** `index.html` ni `styles.css`.
+Control UI over the study **without writing** `index.html` or `styles.css`.
 
-| Pieza | Rol |
+| Piece | Role |
 |---|---|
-| Preview | iframe de `index.html`; se muta en memoria (clases + tokens + `--c*`) |
-| Controles | tipo, tema, colores, pan, estado, velocidad, angulo, origen |
-| Paleta hex | al elegir tema carga preset indigo/silver; editable con picker o texto |
-| Reset preset | vuelve a los hex canonicos del tema |
-| Codigo generado | textarea editable: se sincroniza con controles y al editar a mano actualiza el preview |
+| Preview | `index.html` iframe; mutated in memory (classes + tokens + `--c*`) |
+| Controls | type, theme, color count, pan, motion, speed, angle, origin |
+| Hex palette | choosing a theme loads indigo/silver presets; editable via picker or text |
+| Reset preset | restores canonical hex values for the theme |
+| Generated code | editable textarea: syncs with controls; hand-edits update the preview |
 
-Archivos: `labv2.html` + `labv2.css` + `labv2.js` (comentarios de decision/modulos en el JS).
+Files: `labv2.html` + `labv2.css` + `labv2.js` (decision/module comments in the JS).
 
-## Decision de implementacion (estudio)
+## Implementation decision (study)
 
-**Objetivo:** un fondo en gradiente que se mueva (pan), con atributos tocables: direccion del movimiento, cuantos colores entran al degrade, velocidad, y ademas tipo/tema.
+**Goal:** a moving gradient background (pan) with controllable motion direction, how many colors enter the blend, speed, plus type/theme.
 
-**Como se llego a esta forma:** meter cada variante en un solo bloque reventaba el CSS. Se partio en ejes que se ensamblan en el `body`:
+**How we got here:** packing every variant into one CSS block would explode. The problem was split into axes composed on `body`:
 
-| Eje | Que controla |
+| Axis | Controls |
 |---|---|
-| Tipo | Geometria: linear / radial / conic |
-| Tema | Paleta indigo u silver (`--c1`...`--c8`) |
-| Colores | Cuantos tonos de la paleta usan el degrade (`--colores-2`...`--colores-8`) |
-| Pan | Direccion del desplazamiento |
-| Estado | `is-running` / `is-stopped` (click alterna); stopped usa `animation-play-state: paused` para frenar el pan sin resetearlo |
-| Velocidad | `--grad-speed` 0-100 -> duracion |
+| Type | Geometry: linear / radial / conic |
+| Theme | Indigo or silver palette (`--c1`...`--c8`) |
+| Colors | How many palette tones enter the blend (`--colores-2`...`--colores-8`) |
+| Pan | Travel direction |
+| Motion | `is-running` / `is-stopped` (click toggles); stopped uses `animation-play-state: paused` to freeze pan without resetting |
+| Speed | `--grad-speed` 0-100 → duration |
 
-Mas colores = fundido mas fino. Los slots vacios de `--tone-*` repiten el ultimo tono (no `transparent`), asi no aparece un tramo negro al final.
+More colors = finer blend. Unused `--tone-*` slots repeat the last tone (not `transparent`), so no black gap at the end.
 
-`animation: none` reiniciaba el pan al frame 0; por eso stopped comparte la misma animacion y solo pone `paused`.
+`animation: none` reset the pan to frame 0; that is why stopped keeps the same animation and only sets `paused`.
 
-## Archivos
+## Files
 
-| Archivo | Rol |
+| File | Role |
 |---|---|
-| `index.html` | Canvas del estudio + click running/stopped |
-| `styles.css` | Sistema de gradiente |
+| `index.html` | Study canvas + click running/stopped |
+| `styles.css` | Gradient system |
 | `lab.html` + `lab.css` + `app.js` | Lab v1: textareas + preview |
-| `labv2.html` + `labv2.css` + `labv2.js` | Lab v2: controles + paleta hex + codigo generado |
-| `frames.html` + `frames.css` | Galeria de frames enmascarados |
-| `lab-frames.html` + `lab-frames.js` | Lab frames (controles = v2, preview = frames) |
-| `README.md` | Esta guia |
+| `labv2.html` + `labv2.css` + `labv2.js` | Lab v2: controls + hex palette + generated code |
+| `frames.html` + `frames.css` | Masked frames gallery |
+| `lab-frames.html` + `lab-frames.js` | Lab frames (controls = v2, preview = frames) |
+| `README.md` | This guide |
 
-## Definiciones
+## Definitions
 
-| Token / clase | Para que esta |
+| Token / class | Purpose |
 |---|---|
-| `grad-surface` | Cascara del canvas; defaults y layout |
-| `--c1`...`--c8` | Paleta del tema (en lab v2 tambien override por `style`) |
-| `--tone-1`...`--tone-8` | Colores activos que come el gradient() |
-| `--colores-2`...`--colores-8` | Cuantos tonos distintos entran |
-| `--grad-angle` / `--grad-origin-*` | Angulo y origen del degrade |
-| `--pan-from-*` / `--pan-to-*` | Extremos del pan |
-| `--grad-speed` / `--grad-duration` | Ritmo (0 lento ... 100 rapido) |
-| `is-running` / `is-stopped` | Play o pause del pan (`animation-play-state`) |
-| `.config` | Labels de la config activa abajo |
+| `grad-surface` | Surface shell; defaults and layout |
+| `--c1`...`--c8` | Theme palette (lab v2/frames can override via `style`) |
+| `--tone-1`...`--tone-8` | Active colors consumed by `gradient()` |
+| `--colores-2`...`--colores-8` | How many distinct tones enter |
+| `--grad-angle` / `--grad-origin-*` | Angle and origin of the gradient |
+| `--pan-from-*` / `--pan-to-*` | Pan endpoints |
+| `--grad-speed` / `--grad-duration` | Pace (0 slow … 100 fast) |
+| `is-running` / `is-stopped` | Play or pause pan (`animation-play-state`) |
+| `.config` | Bottom labels for the active config |
 
-## Ejemplo de combinacion
+## Combination example
 
 ```html
 <body
