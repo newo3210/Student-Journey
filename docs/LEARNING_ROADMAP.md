@@ -1,12 +1,14 @@
 # Learning Roadmap — Student Journey
 
 > **Idioma:** Español (guía de estudio).  
-> **Changes:** `study-roadmap-docs`, `academic-portfolio-5-repos`  
-> **Última actualización:** 2026-07-31
+> **Changes:** `study-roadmap-docs`, `academic-portfolio-5-repos`, `web3-login-eth`  
+> **Última actualización:** 2026-08-20
 
 Este documento es la **búsqueda profesional consolidada**: qué estudiar, con qué recursos, y en paralelo **qué construir** en el portfolio.
 
-**Prioridad actual (academia + mercado tradicional):** los **5 repos Full Stack Moderno sin IA** están perfilados en [`docs/ACADEMIC_PORTFOLIO.md`](./ACADEMIC_PORTFOLIO.md). El track Advanced (AI SDK / RAG) queda **posterior** y opcional.
+**Prioridad académica:** los **5 repos Full Stack Moderno sin IA** están perfilados en [`docs/ACADEMIC_PORTFOLIO.md`](./ACADEMIC_PORTFOLIO.md).  
+**Track alterno Web3 (ahora):** template Base `apps/web3-login-ETH/` → GitHub `web3-login-ETH` (connect + SIWE + identidad + balances).  
+**Advanced AI:** sigue **posterior** y opcional.
 
 ---
 
@@ -16,13 +18,15 @@ Este documento es la **búsqueda profesional consolidada**: qué estudiar, con q
 |---|---|---|
 | **Study** | ¿Qué skill practico esta semana? | Notas, ejercicios, cursos |
 | **Academic Build** | ¿Qué 5 repos tradicionales subo a GitHub? | Ver `ACADEMIC_PORTFOLIO.md` |
+| **Web3 Build (alterno)** | ¿Template wallet / SIWE en Base? | `apps/web3-login-ETH/` → `web3-login-ETH` |
 | **Advanced Build** | ¿Template con AI / colas? | Track opcional (más abajo) |
 
-**Orden recomendado:** cerrar Academic (5 repos) → recién entonces Advanced (IA).
+**Orden recomendado:** Academic en paralelo con demos Web3 puntuales; Advanced (IA) después del pack académico sólido.
 
 ```text
 Study Etapa 1–2  ──►  Academic repos 1–5 (React → Express → CRUD → Auth → Next)
-Study Etapa 3–4  ──►  Advanced (AI / system design) solo si el pack académico ya está sólido
+Web3 paralelo    ──►  web3-login-ETH (Base connect + SIWE + balances)
+Study Etapa 3–4  ──►  Advanced (AI / system design) si el pack académico ya está sólido
 ```
 
 ---
@@ -38,7 +42,21 @@ Study Etapa 3–4  ──►  Advanced (AI / system design) solo si el pack acad
 | 5 | `nextjs-booking-app` | Next.js full stack moderno |
 
 Detalle, rúbricas y defensa: **[`docs/ACADEMIC_PORTFOLIO.md`](./ACADEMIC_PORTFOLIO.md)**  
-**Siguiente change de código:** `react-task-manager`
+**Siguiente change académico de código:** `express-api-boilerplate`
+
+---
+
+## 0.2 Web3 Build (alterno portfolio) — `web3-login-ETH`
+
+| Item | Valor |
+|---|---|
+| Path hub | `apps/web3-login-ETH/` |
+| GitHub | `web3-login-ETH` |
+| Stack | Vite + React + TS + Thirdweb v5 + viem + jose |
+| Red | Base mainnet (`8453`) |
+| Demuestra | Connect, SIWE, Basename/ENS + avatar, ETH + ERC-20 opcional |
+
+OpenSpec: `openspec/changes/web3-login-eth/`
 
 ---
 
