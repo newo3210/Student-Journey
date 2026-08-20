@@ -23,5 +23,8 @@ Thumbs.db
 tmp/
 !.gitkeep
 
+# Git worktrees (isolated feature checkouts)
+.worktrees/
+
 # Vite
 *.local

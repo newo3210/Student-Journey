@@ -27,10 +27,25 @@ Clase 1 JS — también publicadas en [full-stack-student-practices](https://git
 
 Profiles & rubrics: [`docs/ACADEMIC_PORTFOLIO.md`](docs/ACADEMIC_PORTFOLIO.md)
 
+## Web3 alternate (portfolio)
+
+| Repo | Status |
+|---|---|
+| `web3-login-ETH` | Implemented (`apps/web3-login-ETH`) — Base connect + SIWE + identity + balances · [GitHub](https://github.com/newo3210/web3-login-ETH) |
+
 ## Quick start (repo 1)
 
 ```bash
 cd apps/react-task-manager
+npm install
+npm run dev
+```
+
+## Quick start (Web3 template)
+
+```bash
+cd apps/web3-login-ETH
+cp .env.example .env
 npm install
 npm run dev
 ```
