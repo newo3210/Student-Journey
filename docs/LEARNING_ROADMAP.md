@@ -2,11 +2,13 @@
 
 > **Idioma:** Español (guía de estudio).  
 > **Changes:** `study-roadmap-docs`, `academic-portfolio-5-repos`  
-> **Última actualización:** 2026-07-31
+> **Última actualización:** 2026-08-21
 
 Este documento es la **búsqueda profesional consolidada**: qué estudiar, con qué recursos, y en paralelo **qué construir** en el portfolio.
 
 **Prioridad actual (academia + mercado tradicional):** los **5 repos Full Stack Moderno sin IA** están perfilados en [`docs/ACADEMIC_PORTFOLIO.md`](./ACADEMIC_PORTFOLIO.md). El track Advanced (AI SDK / RAG) queda **posterior** y opcional.
+
+**Track paralelo (no reemplaza Academic):** **WhatsApp Agents** en [`WhatsApp-agents/`](../WhatsApp-agents/README.md) — demos de bots (Meta Cloud API Level 1 primero). Útil para clientes/portfolio, pero **no** demota la prioridad de los 5 repos académicos.
 
 ---
 
@@ -16,9 +18,10 @@ Este documento es la **búsqueda profesional consolidada**: qué estudiar, con q
 |---|---|---|
 | **Study** | ¿Qué skill practico esta semana? | Notas, ejercicios, cursos |
 | **Academic Build** | ¿Qué 5 repos tradicionales subo a GitHub? | Ver `ACADEMIC_PORTFOLIO.md` |
+| **WhatsApp Agents** (paralelo) | ¿Demo de bot WhatsApp para cliente? | Hub `WhatsApp-agents/` (Meta primero) |
 | **Advanced Build** | ¿Template con AI / colas? | Track opcional (más abajo) |
 
-**Orden recomendado:** cerrar Academic (5 repos) → recién entonces Advanced (IA).
+**Orden recomendado:** cerrar Academic (5 repos) como prioridad. WhatsApp Agents puede avanzar en paralelo para demos urgentes **sin** sustituir el pack académico. Advanced (IA) sigue posterior.
 
 ```text
 Study Etapa 1–2  ──►  Academic repos 1–5 (React → Express → CRUD → Auth → Next)
@@ -39,6 +42,20 @@ Study Etapa 3–4  ──►  Advanced (AI / system design) solo si el pack acad
 
 Detalle, rúbricas y defensa: **[`docs/ACADEMIC_PORTFOLIO.md`](./ACADEMIC_PORTFOLIO.md)**  
 **Siguiente change de código:** `react-task-manager`
+
+---
+
+## 0.2 WhatsApp Agents (paralelo, demos)
+
+Hub: [`WhatsApp-agents/README.md`](../WhatsApp-agents/README.md). OpenSpec: `whatsapp-agents`.
+
+| Entregable | Estado |
+|---|---|
+| Catálogo motores + niveles 1–4 + anti-ban (docs only) | Hecho |
+| `meta-cloud-api` Level 1 (webhook, texto, interactive, media) | Hecho |
+| Evolution / Waha / Baileys / WhatsMeow | Stubs — un change por motor |
+
+**Regla de foco:** si hay conflicto de tiempo, gana Academic. WhatsApp es vía de demo, no el camino principal de aprendizaje Full Stack.
 
 ---
 
