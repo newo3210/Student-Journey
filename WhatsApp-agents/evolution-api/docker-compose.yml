@@ -1,0 +1,84 @@
+# Evolution API + Level 1 bot — educational / demo only.
+# Unofficial WhatsApp gateway: ban risk; not for production compliance claims.
+#
+# Slim (default): Evolution + bot only. Redis/Postgres disabled on the gateway.
+# Live `docker compose up` against unofficial images is UNVERIFIED and may fail.
+#
+# Full (closer to official Evolution v2 Docker docs — Redis + Postgres):
+#   docker compose -f docker-compose.yml -f docker-compose.full.yml --profile full up --build
+#   docker compose -f docker-compose.yml -f docker-compose.full.yml --profile full config
+#
+# Usage (slim):
+#   cp .env.example .env   # set EVOLUTION_API_KEY; set EVOLUTION_WEBHOOK_SECRET for tunnels
+#   docker compose up --build
+
+services:
+  # Evolution API gateway - unofficial WhatsApp multi-instance server (v2 image family).
+  evolution-api:
+    image: atendai/evolution-api:v2.1.1
+    container_name: evolution-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_URL: http://localhost:8080
+      AUTHENTICATION_API_KEY: ${EVOLUTION_API_KEY:-change-me-evolution-apikey}
+      AUTHENTICATION_TYPE: apikey
+      LOG_LEVEL: ERROR,WARN,DEBUG,INFO,LOG,DARK
+      DEL_INSTANCE: "false"
+      DATABASE_ENABLED: ${DATABASE_ENABLED:-false}
+      DATABASE_PROVIDER: ${DATABASE_PROVIDER:-postgresql}
+      DATABASE_CONNECTION_URI: ${DATABASE_CONNECTION_URI:-postgresql://evolution:evolution@postgres:5432/evolution?schema=public}
+      CACHE_REDIS_ENABLED: ${CACHE_REDIS_ENABLED:-false}
+      CACHE_REDIS_URI: ${CACHE_REDIS_URI:-redis://redis:6379}
+      CONFIG_SESSION_PHONE_CLIENT: Evolution API
+      CONFIG_SESSION_PHONE_NAME: Chrome
+    volumes:
+      - evolution_instances:/evolution/instances
+      - evolution_store:/evolution/store
+
+  # Redis cache - Evolution v2 typical dependency; only with profile `full`.
+  redis:
+    image: redis:7-alpine
+    profiles: ["full"]
+    restart: unless-stopped
+
+  # Postgres - Evolution v2 typical dependency; only with profile `full`.
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["full"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: evolution
+      POSTGRES_PASSWORD: evolution
+      POSTGRES_DB: evolution
+    volumes:
+      - evolution_pg:/var/lib/postgresql/data
+
+  # Bot service - Express Level 1 demo (presence + delay humanization C).
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: evolution-bot
+    restart: unless-stopped
+    depends_on:
+      - evolution-api
+    ports:
+      - "${PORT:-3001}:3001"
+    environment:
+      NODE_ENV: production
+      EVOLUTION_API_URL: http://evolution-api:8080
+      EVOLUTION_API_KEY: ${EVOLUTION_API_KEY:-change-me-evolution-apikey}
+      EVOLUTION_INSTANCE: ${EVOLUTION_INSTANCE:-student-demo}
+      EVOLUTION_WEBHOOK_SECRET: ${EVOLUTION_WEBHOOK_SECRET:-}
+      PORT: "3001"
+      COUPON_MEDIA_URL: ${COUPON_MEDIA_URL:-https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf}
+      EVOLUTION_API_VERSION: ${EVOLUTION_API_VERSION:-v2}
+      HUMANIZE_MIN_MS: ${HUMANIZE_MIN_MS:-20000}
+      HUMANIZE_MAX_MS: ${HUMANIZE_MAX_MS:-45000}
+
+volumes:
+  evolution_instances:
+  evolution_store:
+  evolution_pg:

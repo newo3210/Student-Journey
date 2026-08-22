@@ -4,7 +4,7 @@
 > **Ubicación:** raíz del repo `STUDENT_DECISION_LOG.md`.
 
 **Última actualización:** 2026-08-21  
-**Changes relacionados:** `openspec/changes/react-task-manager/`, `openspec/changes/whatsapp-agents/`
+**Changes relacionados:** `openspec/changes/react-task-manager/`, `openspec/changes/whatsapp-agents/`, `openspec/changes/whatsapp-agents-evolution/`
 
 ---
 
@@ -12,7 +12,7 @@
 
 Se implementó el **repo académico #1** `react-task-manager` en `apps/react-task-manager/`: React + Vite + TypeScript + Tailwind + Zod, con firma de autor en cada `.ts`/`.tsx` creado. Demuestra frontend de curso tradicional (sin API/IA).
 
-En paralelo (sin reemplazar la prioridad académica) se abrió el track **WhatsApp Agents** en `WhatsApp-agents/`: catálogo de motores + plantilla ejecutable **Meta Cloud API** (webhook, texto, botones interactivos, PDF/imagen cupón). Los demás motores quedan como stubs. Anti-ban solo documentado.
+En paralelo (sin reemplazar la prioridad académica) se abrió el track **WhatsApp Agents** en `WhatsApp-agents/`: catálogo de motores + plantillas ejecutables **Meta Cloud API** y **Evolution API** (Level 1: webhook, texto, botones/listas, PDF/imagen cupón). Evolution añade Compose + humanización C (presence `composing` + delay 20–45s, sin Redis/BullMQ). Waha / Baileys / WhatsMeow siguen como stubs.
 
 ---
 
@@ -49,21 +49,42 @@ Meta (GET/POST /webhook)
 | Outbound | text / interactive / media | Zod + builders |
 | Startup | secrets | Zod `envSchema` (fail fast) |
 
+### 2.3 Evolution API (WhatsApp Agents)
+
+```text
+Evolution (POST /webhook)
+  → presentation/webhookRoutes
+    → services (inboundHandler + demoFlow + outboundBuilders)
+      → services/humanizedDispatch (presence → delay → send)
+        → infrastructure/evolutionClient
+          → /chat/sendPresence/{instance}
+          → /message/sendText|sendButtons|sendList|sendMedia/{instance}
+```
+
+| Flecha | Dato | Quién valida |
+|---|---|---|
+| POST inbound | envelope Evolution | Rutas: secreto opcional `x-webhook-secret`; Zod webhook → `InboundEvent` solo si `fromMe === false` |
+| Humanize | presence + delay ms | `HUMANIZE_MIN_MS`/`HUMANIZE_MAX_MS` + sleep inyectable |
+| Outbound | text / buttons / list / media | Zod + builders |
+| Startup | secrets | Zod `envSchema` (fail fast) |
+
 ---
 
 ## 3. Justificación de Clean Architecture
 
 **Task manager:** componentes presentacionales no tocan `localStorage`. La lógica vive en `features/tasks/`; el storage es un adaptador.
 
-**WhatsApp Meta:** las rutas Express solo validan y delegan. La orquestación del demo (keywords → menú → media) está en `services/`; el HTTP a Graph queda en `infrastructure/`. Así se puede mockear Graph en tests sin ensuciar presentation.
+**WhatsApp Meta:** las rutas Express solo validan y delegan. La orquestación del demo está en `services/`; el HTTP a Graph queda en `infrastructure/`.
+
+**WhatsApp Evolution:** misma separación. El cliente HTTP de Evolution está aislado (paths v2 documentados en README) para absorber churn de la API. La humanización C vive en `humanizedDispatch` (inyectable en tests) sin colas Redis.
 
 ---
 
 ## 4. Control de salida
 
 - Task manager: Zod rechaza títulos vacíos; storage corrupto → `[]`.
-- Meta: env incompleto aborta el arranque; verify incorrecto → 403 sin eco del challenge; payloads outbound tipados; Graph mockeado en Vitest.
-- Post adversarial: si hay `WHATSAPP_APP_SECRET`, el POST valida `X-Hub-Signature-256` (HMAC sobre raw body); Graph non-2xx se loguea y no cuenta como `sent`. Túnel público sin secret sigue siendo inseguro (documentado). Ack 200 temprano puede perder mensajes si Graph falla.
+- Meta: env incompleto aborta el arranque; verify incorrecto → 403; Graph mockeado en Vitest; HMAC opcional documentado.
+- Evolution: env incompleto aborta; `EVOLUTION_WEBHOOK_SECRET` opcional (header `x-webhook-secret`; sin secreto un túnel público es un send-oracle); envíos pasan por presence+delay (en production no se acepta delay 0); sleep mockeado / delays en 0 solo fuera de production; HTTP Evolution mockeado; non-2xx no cuenta como `sent`; disclaimer de gateway no oficial en README.
 
 ---
 
@@ -76,8 +97,10 @@ Meta (GET/POST /webhook)
 | Presentational component | Solo UI + callbacks | `components/` |
 | Webhook verify | Challenge Meta | `verifyWebhook.ts` |
 | Graph client | Adapter HTTP Cloud API | `metaGraphClient.ts` |
+| Evolution client | Adapter HTTP gateway v2 | `evolutionClient.ts` |
+| Humanized dispatch | Presence + delay 20–45s | `humanizedDispatch.ts` |
 | Demo flow | Keywords / botones → respuestas | `demoFlow.ts` |
-| Anti-ban (docs) | Presence + jitter + colas (futuro) | `WhatsApp-agents/docs/anti-ban-strategy.md` |
+| Anti-ban | Docs + Evolution C runtime | `WhatsApp-agents/docs/anti-ban-strategy.md` |
 | Author signature | Primera línea en TS/JS nuevos | `//Mariano Montini ('bosque', 'bosquestudio')` |
 
 ---
@@ -88,9 +111,10 @@ Meta (GET/POST /webhook)
 - Estado fuera de `App.tsx`
 - Validación Zod antes de mutar
 - Firma de autor como convención de ownership en el portfolio
-- **Meta primero** porque es API oficial: no hace falta anti-ban runtime para el demo
-- Capas presentation / services / infrastructure / contracts en el bot
-- Track WhatsApp **paralelo** al académico: demos de cliente sin bajar la prioridad de los 5 repos Full Stack
+- **Meta primero** (API oficial) y **Evolution segundo** (Compose + humanización C simple)
+- Capas presentation / services / infrastructure / contracts en ambos bots
+- Humanización C sin Redis: suficiente para demo educativo; riesgo de ban / ToS explícito
+- Track WhatsApp **paralelo** al académico
 
 ---
 
@@ -100,7 +124,8 @@ Meta (GET/POST /webhook)
 |---|---|---|
 | Repo 1 implementado y tests verdes | OK | 5 tests |
 | Meta Cloud API Level 1 + tests | OK | Vitest (Graph mock) |
-| Evolution / Waha / Baileys / WhatsMeow | — | Stubs README only |
+| Evolution API Level 1 + Compose + humanización C | OK | Vitest 31 tests (Evolution mock, sleep inyectado) |
+| Waha / Baileys / WhatsMeow | — | Stubs README only |
 | Repos académicos 2–5 sin código | — | Siguiente académico: express-api-boilerplate |
 
 ---
@@ -115,3 +140,4 @@ Meta (GET/POST /webhook)
 | 2026-07-31 | `react-task-manager` | MVP en `apps/react-task-manager` + firmas |
 | 2026-08-21 | `whatsapp-agents` | Hub WhatsApp + Meta Cloud API Level 1 (paralelo) |
 | 2026-08-21 | `whatsapp-agents` §7 | HMAC webhook + Graph failures honestos (re-audit PASS WITH GAPS) |
+| 2026-08-21 | `whatsapp-agents-evolution` | Evolution Level 1 + Compose + humanización C |
