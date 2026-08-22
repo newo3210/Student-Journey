@@ -3,7 +3,7 @@
 > **Language:** English (technical contract).  
 > **Location:** repository root `ARCHITECTURE_SDD.md`.  
 > **Last updated:** 2026-08-22  
-> **Related OpenSpec changes:** `openspec/changes/react-task-manager/`, `openspec/changes/whatsapp-agents/`, `openspec/changes/whatsapp-agents-evolution/`, `openspec/changes/whatsapp-agents-waha/`
+> **Related OpenSpec changes:** `openspec/changes/react-task-manager/`, `openspec/changes/whatsapp-agents/`, `openspec/changes/whatsapp-agents-evolution/`, `openspec/changes/whatsapp-agents-waha/`, `openspec/changes/whatsapp-agents-baileys/`
 
 ---
 
@@ -13,7 +13,7 @@
 
 **Priority track — Academic:** five traditional Full Stack Modern repositories (no AI). Repo **#1** `react-task-manager` is implemented at `apps/react-task-manager/`. Repos 2–5 remain profiled in `docs/ACADEMIC_PORTFOLIO.md`.
 
-**Parallel track — WhatsApp Agents:** hub at `WhatsApp-agents/` for demonstrable messaging bots. Engines **Meta Cloud API** (`meta-cloud-api/`), **Evolution API** (`evolution-api/`), and **Waha** (`waha/`) are implemented at Level 1. Baileys and WhatsMeow remain stubs. This track does **not** replace Academic priority.
+**Parallel track — WhatsApp Agents:** hub at `WhatsApp-agents/` for demonstrable messaging bots. Engines **Meta Cloud API**, **Evolution API**, **Waha**, and **Baileys** are implemented at Level 1. WhatsMeow remains a stub. This track does **not** replace Academic priority.
 
 ## 2. Layer mapping
 
@@ -37,7 +37,7 @@ Author signature (line 1 on hand-written `.ts`/`.tsx`): `//Mariano Montini ('bos
 | Infrastructure | `src/infrastructure/metaGraphClient.ts` | Graph API HTTP (`v21.0` default) |
 | Contracts | `src/contracts/` | Zod env, webhook, outbound shapes |
 
-Catalog / pedagogy: `WhatsApp-agents/README.md`, `WhatsApp-agents/docs/anti-ban-strategy.md` (Meta: docs only; Evolution/Waha: presence+delay runtime C).
+Catalog / pedagogy: `WhatsApp-agents/README.md`, `WhatsApp-agents/docs/anti-ban-strategy.md` (Meta: docs only; Evolution/Waha/Baileys: presence+delay runtime C).
 
 ### 2.3 `WhatsApp-agents/evolution-api` (implemented)
 
@@ -63,7 +63,20 @@ Humanization **C only:** presence `composing` → stochastic 20–45s delay → 
 
 Humanization **C only:** `startTyping` → stochastic 20–45s delay → send (injectable sleep; no Redis/BullMQ). Default menu is numbered **text fallback** (`WAHA_MENU_MODE=text`); `sendButtons`/`sendList` optional for PLUS engines.
 
-### 2.5 Remaining academic apps (intended)
+### 2.5 `WhatsApp-agents/baileys` (implemented)
+
+| Conceptual layer | Paths | Notes |
+|---|---|---|
+| Presentation | `src/presentation/webhookRoutes.ts` | POST `/webhook` **simulator** for TDD; thin |
+| Application | `src/services/` | demo, humanized dispatch, inbound handler, outbound builders |
+| Infrastructure | `src/infrastructure/baileysAdapter.ts` | wraps `sendPresenceUpdate` + `sendMessage`; tests inject a fake socket |
+| Live socket | `src/infrastructure/createLiveSocket.ts`, `wireLiveBaileysEvents.ts` | Pairing QR printed in terminal; `messages.upsert` → demo handler. Vitest fakes `ev.on` and never calls `makeWASocket`. |
+| Contracts | `src/contracts/` | Zod env, webhook simulator, outbound shapes |
+| Ops | `docker-compose.yml` | Node bot only; interactive QR; auth volume gitignored |
+
+Humanization **C only:** `sendPresenceUpdate('composing')` → stochastic 20–45s delay → send (injectable sleep; no Redis/BullMQ). Default menu is numbered **text** (native buttons documented as unstable).
+
+### 2.6 Remaining academic apps (intended)
 
 | Conceptual layer | Typical paths |
 |---|---|
@@ -116,6 +129,20 @@ Waha webhook POST
             → POST /api/sendText | sendFile | sendImage | sendButtons | sendList
 ```
 
+### 3.5 Baileys template
+
+```text
+Live (npm run dev, not Vitest):
+  connection.update { qr } → ASCII QR + BAILEYS_QR_PAYLOAD in stdout
+  messages.upsert → map proto → extractInboundEvent envelope
+    → services/inboundHandler (same as HTTP; skip fromMe !== false)
+      → demoFlow + humanizedDispatch → baileysAdapter → sock.send*
+
+HTTP POST /webhook (simulator only):
+  presentation/webhookRoutes (optional x-webhook-secret, then HTTP ack)
+    → same inboundHandler path
+```
+
 ## 4. API routes
 
 ### 4.1 Academic repo 1
@@ -153,6 +180,15 @@ Compose: slim `evolution-api` (gateway `:8080`) + `bot` (`:3001`). Profile `full
 
 Compose: slim `waha` (`devlikeapro/waha:latest` on `:3000`) + `bot` (`:3002`). Live `up` not claimed.
 
+### 4.5 Baileys
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/webhook` | **Simulator only** (TDD). Live WhatsApp inbound is `messages.upsert` on the socket, not this route. |
+| GET | `/health` | Liveness |
+
+Compose: Node `bot` only (`:3003`). Pairing is interactive QR; live `up` not claimed. Auth dir gitignored.
+
 ## 5. Schemas
 
 ### 5.1 Repo 1
@@ -178,6 +214,12 @@ Compose: slim `waha` (`devlikeapro/waha:latest` on `:3000`) + `bot` (`:3002`). L
 - Inbound: Waha `message` envelope → `InboundEvent` (`from`, `messageId`, `type`, text / interactive id)
 - Outbound: text, optional buttons/list, media (+ `startTyping` before humanized send)
 
+### 5.5 Baileys
+
+- Env: `BAILEYS_AUTH_DIR` (default `./auth_info_baileys`), `PORT` (default `3003`), `COUPON_MEDIA_URL`, `BAILEYS_MENU_MODE` (default `text`), optional `BAILEYS_WEBHOOK_SECRET` (when set → header `x-webhook-secret` required), `HUMANIZE_MIN_MS` / `HUMANIZE_MAX_MS` (default 20000–45000; production floor 20000/45000)
+- Inbound: HTTP simulator **or** live `messages.upsert` mapped to `{ event: 'messages.upsert', payload }` → `InboundEvent`; `fromMe` must be `false`
+- Outbound: text, optional buttons/list (adapter text-fallback), media (+ `sendPresenceUpdate` before humanized send)
+
 ## 6. AI / LLM boundaries
 
 Not applicable on the Academic track or Meta/Evolution Level 1 templates (no LLM). Levels 2–4 (AI / RAG / voice) are catalogued only.
@@ -188,11 +230,12 @@ Not applicable on the Academic track or Meta/Evolution Level 1 templates (no LLM
 - Meta template: missing env fails startup with listed keys; verify mismatch → HTTP 403; when `WHATSAPP_APP_SECRET` is set, invalid/missing `X-Hub-Signature-256` → HTTP 401/403 (no Graph call); inbound parse miss → no Graph send; Graph non-2xx responses are logged after the 200 webhook ack and are **not** counted as successful `sent` (lost-message risk remains because Meta will not retry after early ack)
 - Evolution template: missing env fails startup; when `EVOLUTION_WEBHOOK_SECRET` is set, missing `x-webhook-secret` → HTTP 401 and mismatch → HTTP 403 (no Evolution send); inbound is processed only if `fromMe === false`; Evolution **non-2xx** send responses are logged in `humanizedSendAll` and are **not** counted as `sent` (2xx with error JSON may still increment `sent`)
 - Waha template: same secret/fromMe/delay-floor pattern with `WAHA_WEBHOOK_SECRET`; Waha **non-2xx** send responses are not counted as `sent`
+- Baileys template: same secret/fromMe/delay-floor pattern with `BAILEYS_WEBHOOK_SECRET`; adapter failures (caught socket errors) are **not** counted as `sent`; Vitest never calls `createLiveBaileysSocket`
 
 ## 8. Non-goals
 
 - Academic repo 1: backend, auth, DB, AI
-- WhatsApp Evolution/Waha changes: Redis/BullMQ queues; Baileys/WhatsMeow full templates; Level 2–4 AI/voice; guaranteeing ToS compliance
+- WhatsApp Evolution/Waha/Baileys changes: Redis/BullMQ queues; WhatsMeow full template; Level 2–4 AI/voice; guaranteeing ToS compliance; live QR in CI
 
 ## 9. Milestones
 
@@ -202,6 +245,7 @@ Not applicable on the Academic track or Meta/Evolution Level 1 templates (no LLM
 | — | `WhatsApp-agents` hub + Meta Level 1 | Done (parallel) |
 | — | Evolution API Level 1 + humanization C | Done (parallel) |
 | — | Waha Level 1 + humanization C | Done (parallel) |
+| — | Baileys Level 1 + humanization C | Done (parallel) |
 | 2 | `express-api-boilerplate` | Next (Academic) |
 | 3–5 | blog / auth / booking | Pending |
 
@@ -216,3 +260,5 @@ Not applicable on the Academic track or Meta/Evolution Level 1 templates (no LLM
 | 2026-08-21 | Evolution API Level 1 template + Compose + humanization C | `whatsapp-agents-evolution` |
 | 2026-08-21 | Adversarial fixes: webhook secret, fromMe false-only, production delay floor, slim vs full Compose | `whatsapp-agents-evolution` |
 | 2026-08-22 | Waha Level 1 template + Compose + humanization C + text-menu fallback | `whatsapp-agents-waha` |
+| 2026-08-22 | Baileys Level 1 template + fake socket tests + humanization C + text menu | `whatsapp-agents-baileys` |
+| 2026-08-22 | Live QR print + messages.upsert wiring (tests fake `ev.on`) | `whatsapp-agents-baileys` |

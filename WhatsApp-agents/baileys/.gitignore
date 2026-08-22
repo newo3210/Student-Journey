@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+*.log
+coverage/
+
+# Baileys multi-file auth / QR session (never commit creds)
+auth_info_baileys/
+auth/
+.baileys/
+session/
+baileys_auth/

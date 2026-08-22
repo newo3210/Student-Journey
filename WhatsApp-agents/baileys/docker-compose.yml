@@ -1,0 +1,38 @@
+# Baileys Level 1 bot only — educational / demo.
+# Unofficial WhatsApp Web socket (not a REST gateway): ban risk; not for production compliance.
+#
+# There is NO separate gateway container. Compose wraps this Node process.
+# Pairing (QR) is INTERACTIVE: attach to logs and scan; CI cannot complete pairing.
+# Live `docker compose up` is UNVERIFIED in this change.
+#
+# Usage:
+#   cp .env.example .env
+#   docker compose up --build
+#   docker compose logs -f bot   # scan QR if prompted
+
+services:
+  # Bot service - Express simulator + Baileys socket in-process.
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: baileys-bot
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    ports:
+      - "${PORT:-3003}:3003"
+    environment:
+      NODE_ENV: production
+      BAILEYS_AUTH_DIR: /app/auth_info_baileys
+      BAILEYS_WEBHOOK_SECRET: ${BAILEYS_WEBHOOK_SECRET:-}
+      BAILEYS_MENU_MODE: ${BAILEYS_MENU_MODE:-text}
+      PORT: "3003"
+      COUPON_MEDIA_URL: ${COUPON_MEDIA_URL:-https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf}
+      HUMANIZE_MIN_MS: ${HUMANIZE_MIN_MS:-20000}
+      HUMANIZE_MAX_MS: ${HUMANIZE_MAX_MS:-45000}
+    volumes:
+      - baileys_auth:/app/auth_info_baileys
+
+volumes:
+  baileys_auth:
