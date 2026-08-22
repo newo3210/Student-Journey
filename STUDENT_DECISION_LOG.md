@@ -4,7 +4,7 @@
 > **Ubicación:** raíz del repo `STUDENT_DECISION_LOG.md`.
 
 **Última actualización:** 2026-08-22  
-**Changes relacionados:** `openspec/changes/react-task-manager/`, `openspec/changes/whatsapp-agents/`, `openspec/changes/whatsapp-agents-evolution/`, `openspec/changes/whatsapp-agents-waha/`, `openspec/changes/whatsapp-agents-baileys/`
+**Changes relacionados:** `openspec/changes/react-task-manager/`, `openspec/changes/whatsapp-agents/`, `openspec/changes/whatsapp-agents-evolution/`, `openspec/changes/whatsapp-agents-waha/`, `openspec/changes/whatsapp-agents-baileys/`, `openspec/changes/whatsapp-agents-whatsmeow/`
 
 ---
 
@@ -12,7 +12,7 @@
 
 Se implementó el **repo académico #1** `react-task-manager` en `apps/react-task-manager/`: React + Vite + TypeScript + Tailwind + Zod, con firma de autor en cada `.ts`/`.tsx` creado. Demuestra frontend de curso tradicional (sin API/IA).
 
-En paralelo (sin reemplazar la prioridad académica) se abrió el track **WhatsApp Agents** en `WhatsApp-agents/`: catálogo de motores + plantillas ejecutables **Meta Cloud API**, **Evolution API**, **Waha** y **Baileys** (Level 1: texto, menú nativo o fallback de texto, PDF/imagen cupón). Evolution, Waha y Baileys añaden humanización C (presence/typing + delay 20–45s, sin Redis/BullMQ). Baileys es **librería socket** (adaptador inyectable + simulador HTTP `/webhook`); WhatsMeow sigue como stub.
+En paralelo (sin reemplazar la prioridad académica) se abrió el track **WhatsApp Agents** en `WhatsApp-agents/`: catálogo de cinco motores + plantillas ejecutables **Meta Cloud API**, **Evolution API**, **Waha**, **Baileys** y **WhatsMeow** (Level 1: texto, menú nativo o fallback de texto, PDF/imagen cupón). Evolution, Waha, Baileys y WhatsMeow añaden humanización C (presence/typing + delay 20–45s, sin Redis/BullMQ). Baileys y WhatsMeow son **librerías socket** (adaptador inyectable + simulador HTTP `/webhook`). El catálogo Level 1 está completo.
 
 ---
 
@@ -106,6 +106,23 @@ HTTP POST /webhook: solo simulador TDD
 | Outbound | text / media (botones → texto) | Zod + builders + adaptador fake en Vitest |
 | Startup | auth dir + delays | Zod `envSchema` (fail fast; piso en production) |
 
+### 2.6 WhatsMeow (WhatsApp Agents)
+
+```text
+Live: QR en terminal + eventos de texto → inboundHandler
+HTTP POST /webhook: solo simulador TDD
+  → services (inboundHandler + demoFlow + outboundBuilders)
+    → humanizedDispatch (composing → delay → send)
+      → infrastructure.Client (fake en tests)
+```
+
+| Flecha | Dato | Quién valida |
+|---|---|---|
+| POST inbound | envelope simulador | Rutas: secreto opcional `x-webhook-secret`; contrato inbound solo si `fromMe === false` |
+| Humanize | composing + delay ms | `HUMANIZE_MIN_MS`/`HUMANIZE_MAX_MS` + sleep inyectable |
+| Outbound | text / media (botones → texto) | contratos + adaptador fake en `go test` |
+| Startup | store dir + delays | `ParseEnv` (fail fast; piso en production) |
+
 ---
 
 ## 3. Justificación de Clean Architecture
@@ -118,6 +135,8 @@ HTTP POST /webhook: solo simulador TDD
 
 **WhatsApp Baileys:** no es un gateway REST. El adaptador aísla `sendPresenceUpdate` / `sendMessage`. Los tests fingen `ev.on` (QR + upsert) y nunca llaman `makeWASocket`. El QR se imprime en la terminal; el chat real entra por `messages.upsert`. HTTP `/webhook` es simulador para TDD.
 
+**WhatsApp WhatsMeow:** mismo patrón en **Go**. El `Client` inyectable aísla presence/send. `go test` usa fakes y no importa `go.mau.fi/whatsmeow` (build tag `live`). HTTP `/webhook` es simulador; el QR live se imprime en terminal.
+
 ---
 
 ## 4. Control de salida
@@ -127,6 +146,7 @@ HTTP POST /webhook: solo simulador TDD
 - Evolution: env incompleto aborta; `EVOLUTION_WEBHOOK_SECRET` opcional (header `x-webhook-secret`; sin secreto un túnel público es un send-oracle); envíos pasan por presence+delay (en production no se acepta delay 0); sleep mockeado / delays en 0 solo fuera de production; HTTP Evolution mockeado; non-2xx no cuenta como `sent`; disclaimer de gateway no oficial en README.
 - Waha: el mismo patrón con `WAHA_WEBHOOK_SECRET`, `fromMe === false`, piso de delay en production, HTTP Waha mockeado, disclaimer no oficial, y fallback de menú de texto en CORE.
 - Baileys: el mismo patrón con `BAILEYS_WEBHOOK_SECRET`, `fromMe === false`, piso de delay en production, **adaptador fake** (nunca socket real en CI), disclaimer no oficial, menú de texto numerado, carpeta de auth gitignoreada.
+- WhatsMeow: el mismo patrón con `WHATSMEOW_WEBHOOK_SECRET`, `fromMe === false`, piso de delay en production, **cliente fake** (`go test` sin dispositivo), disclaimer no oficial, menú de texto numerado, store gitignoreado.
 
 ---
 
@@ -142,9 +162,10 @@ HTTP POST /webhook: solo simulador TDD
 | Evolution client | Adapter HTTP gateway v2 | `evolutionClient.ts` |
 | Waha client | Adapter HTTP CORE/PLUS | `wahaClient.ts` |
 | Baileys adapter | Socket `sendPresenceUpdate` / `sendMessage` | `baileysAdapter.ts` |
-| Humanized dispatch | Presence + delay 20–45s | `humanizedDispatch.ts` |
+| WhatsMeow client | Interface `SendPresence` / `SendMessage` | `internal/infrastructure/client.go` |
+| Humanized dispatch | Presence + delay 20–45s | `humanizedDispatch.ts` / `humanized.go` |
 | Demo flow | Keywords / botones → respuestas | `demoFlow.ts` |
-| Anti-ban | Docs + Evolution/Waha/Baileys C runtime | `WhatsApp-agents/docs/anti-ban-strategy.md` |
+| Anti-ban | Docs + Evolution/Waha/Baileys/WhatsMeow C runtime | `WhatsApp-agents/docs/anti-ban-strategy.md` |
 | Author signature | Primera línea en TS/JS nuevos | `//Mariano Montini ('bosque', 'bosquestudio')` |
 
 ---
@@ -155,7 +176,7 @@ HTTP POST /webhook: solo simulador TDD
 - Estado fuera de `App.tsx`
 - Validación Zod antes de mutar
 - Firma de autor como convención de ownership en el portfolio
-- **Meta primero**, **Evolution segundo**, **Waha tercero**, **Baileys cuarto** (socket + simulador HTTP; menú texto)
+- **Meta primero**, **Evolution segundo**, **Waha tercero**, **Baileys cuarto**, **WhatsMeow quinto** (Go + simulador HTTP; menú texto)
 - Capas presentation / services / infrastructure / contracts en los bots implementados
 - Humanización C sin Redis: suficiente para demo educativo; riesgo de ban / ToS explícito
 - Track WhatsApp **paralelo** al académico
@@ -171,7 +192,7 @@ HTTP POST /webhook: solo simulador TDD
 | Evolution API Level 1 + Compose + humanización C | OK | Vitest 31 tests (Evolution mock, sleep inyectado) |
 | Waha Level 1 + Compose + humanización C | OK | Vitest 40 tests (Waha mock, sleep inyectado); `docker compose config` OK; live `up` no reclamado |
 | Baileys Level 1 + humanización C | OK | Vitest 40 tests (adaptador fake, sleep inyectado); QR live no reclamado en CI |
-| WhatsMeow | — | Stub README only |
+| WhatsMeow Level 1 + humanización C | OK | `go test ./...` 27 tests (cliente fake, sleep inyectado); librería real detrás de `-tags live` |
 | Repos académicos 2–5 sin código | — | Siguiente académico: express-api-boilerplate |
 
 ---
@@ -189,3 +210,4 @@ HTTP POST /webhook: solo simulador TDD
 | 2026-08-21 | `whatsapp-agents-evolution` | Evolution Level 1 + Compose + humanización C |
 | 2026-08-22 | `whatsapp-agents-waha` | Waha Level 1 + Compose + humanización C + fallback de menú texto |
 | 2026-08-22 | `whatsapp-agents-baileys` | Baileys Level 1 + adaptador fake + humanización C + menú texto |
+| 2026-08-22 | `whatsapp-agents-whatsmeow` | WhatsMeow Level 1 en Go + cliente fake + humanización C + menú texto |

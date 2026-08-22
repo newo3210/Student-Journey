@@ -54,29 +54,31 @@ The `baileys/` template uses the same **C** pattern on a **socket adapter** (not
 
 Tests inject a fake adapter + sleep and/or set delays to `0`. They never open a live WhatsApp socket.
 
-## Planned rules (later unofficial engines)
+## WhatsMeow Level 1 — implemented (humanization C only)
 
-When WhatsMeow is implemented, consider documenting and (only then) optionally implementing:
+The `whatsmeow/` Go template uses the same **C** pattern on a **socket adapter** (not a REST gateway):
 
-### 1. Presence simulation
+1. Emit presence via `SendPresence(to, "composing")`
+2. Wait a stochastic delay in the **20–45 second** range (`HUMANIZE_MIN_MS` / `HUMANIZE_MAX_MS`)
+3. Send via `SendMessage`
 
-- Emit `composing` / `recording` (or engine-equivalent) before long replies.
-- Cap presence duration; never leave presence stuck on forever.
+**Explicitly not included for WhatsMeow in this change:**
 
-### 2. Stochastic delay (20–45s jitter)
+- Redis / BullMQ
+- Per-recipient persistent queues
+- Claiming stable native buttons (default menu is numbered text)
 
-- Random wait in the **20–45 second** range between outbound bursts to the same recipient when mimicking human chat cadence.
+Tests inject a fake client + sleep and/or set delays to `0`. They never connect to WhatsApp or require a device.
 
-### 3. Per-recipient queues
+## Later unofficial engines (queues / voice)
 
-- One outbound queue (or worker key) **per WhatsApp recipient**.
-- Candidate stacks later: BullMQ / Redis — **not** bundled in Evolution or Waha Level 1.
+Per-recipient Redis/BullMQ queues and Level 4 voice remain **out of scope** for all unofficial Level 1 templates.
 
 ## Status matrix
 
 | Item | Meta | Evolution | Waha | Baileys | WhatsMeow |
 |---|---|---|---|---|---|
-| Stochastic delay runtime | Not implemented | **Yes (20–45s)** | **Yes (20–45s)** | **Yes (20–45s)** | Planned |
-| Presence typing | Not implemented | **Yes (`composing`)** | **Yes (`startTyping`)** | **Yes (`sendPresenceUpdate`)** | Planned |
-| BullMQ / Redis queues | Not implemented | **No** | **No** | **No** | Planned |
-| Level 4 voice STT/TTS | Not implemented | Not implemented | Not implemented | Not implemented | Planned |
+| Stochastic delay runtime | Not implemented | **Yes (20–45s)** | **Yes (20–45s)** | **Yes (20–45s)** | **Yes (20–45s)** |
+| Presence typing | Not implemented | **Yes (`composing`)** | **Yes (`startTyping`)** | **Yes (`sendPresenceUpdate`)** | **Yes (`SendPresence` composing)** |
+| BullMQ / Redis queues | Not implemented | **No** | **No** | **No** | **No** |
+| Level 4 voice STT/TTS | Not implemented | Not implemented | Not implemented | Not implemented | Not implemented |

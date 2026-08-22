@@ -1,0 +1,13 @@
+.env
+*.log
+*.exe
+/bin/
+coverage.out
+
+# WhatsMeow session / store (never commit device creds)
+whatsmeow_store/
+store/
+*.db
+*.db-journal
+session/
+auth_info_whatsmeow/
