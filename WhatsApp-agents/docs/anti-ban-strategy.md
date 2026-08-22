@@ -23,9 +23,24 @@ The `evolution-api/` template implements a **simple in-process** path:
 
 Tests inject sleep and/or set delays to `0` so CI does not wait wall-clock.
 
+## Waha Level 1 — implemented (humanization C only)
+
+The `waha/` template uses the same **C** pattern:
+
+1. Emit typing via Waha `POST /api/startTyping`
+2. Wait a stochastic delay in the **20–45 second** range (`HUMANIZE_MIN_MS` / `HUMANIZE_MAX_MS`)
+3. Send the outbound message (`sendText` / `sendFile` / optional `sendButtons` / `sendList`)
+
+**Explicitly not included for Waha in this change:**
+
+- Redis / BullMQ
+- Per-recipient persistent queues
+
+Tests inject sleep and/or set delays to `0` so CI does not wait wall-clock.
+
 ## Planned rules (later unofficial engines)
 
-When Waha / Baileys / WhatsMeow folders are implemented, consider documenting and (only then) optionally implementing:
+When Baileys / WhatsMeow folders are implemented, consider documenting and (only then) optionally implementing:
 
 ### 1. Presence simulation
 
@@ -39,13 +54,13 @@ When Waha / Baileys / WhatsMeow folders are implemented, consider documenting an
 ### 3. Per-recipient queues
 
 - One outbound queue (or worker key) **per WhatsApp recipient**.
-- Candidate stacks later: BullMQ / Redis — **not** bundled in Evolution Level 1.
+- Candidate stacks later: BullMQ / Redis — **not** bundled in Evolution or Waha Level 1.
 
 ## Status matrix
 
-| Item | Meta | Evolution (this change) | Other engines |
-|---|---|---|---|
-| Stochastic delay runtime | Not implemented | **Yes (20–45s)** | Planned |
-| Presence `composing` | Not implemented | **Yes** | Planned |
-| BullMQ / Redis queues | Not implemented | **No** | Planned |
-| Level 4 voice STT/TTS | Not implemented | Not implemented | Planned |
+| Item | Meta | Evolution | Waha | Other engines |
+|---|---|---|---|---|
+| Stochastic delay runtime | Not implemented | **Yes (20–45s)** | **Yes (20–45s)** | Planned |
+| Presence typing | Not implemented | **Yes (`composing`)** | **Yes (`startTyping`)** | Planned |
+| BullMQ / Redis queues | Not implemented | **No** | **No** | Planned |
+| Level 4 voice STT/TTS | Not implemented | Not implemented | Not implemented | Planned |

@@ -3,8 +3,8 @@
 > **Idioma:** Español (pedagógico).  
 > **Ubicación:** raíz del repo `STUDENT_DECISION_LOG.md`.
 
-**Última actualización:** 2026-08-21  
-**Changes relacionados:** `openspec/changes/react-task-manager/`, `openspec/changes/whatsapp-agents/`, `openspec/changes/whatsapp-agents-evolution/`
+**Última actualización:** 2026-08-22  
+**Changes relacionados:** `openspec/changes/react-task-manager/`, `openspec/changes/whatsapp-agents/`, `openspec/changes/whatsapp-agents-evolution/`, `openspec/changes/whatsapp-agents-waha/`
 
 ---
 
@@ -12,7 +12,7 @@
 
 Se implementó el **repo académico #1** `react-task-manager` en `apps/react-task-manager/`: React + Vite + TypeScript + Tailwind + Zod, con firma de autor en cada `.ts`/`.tsx` creado. Demuestra frontend de curso tradicional (sin API/IA).
 
-En paralelo (sin reemplazar la prioridad académica) se abrió el track **WhatsApp Agents** en `WhatsApp-agents/`: catálogo de motores + plantillas ejecutables **Meta Cloud API** y **Evolution API** (Level 1: webhook, texto, botones/listas, PDF/imagen cupón). Evolution añade Compose + humanización C (presence `composing` + delay 20–45s, sin Redis/BullMQ). Waha / Baileys / WhatsMeow siguen como stubs.
+En paralelo (sin reemplazar la prioridad académica) se abrió el track **WhatsApp Agents** en `WhatsApp-agents/`: catálogo de motores + plantillas ejecutables **Meta Cloud API**, **Evolution API** y **Waha** (Level 1: webhook, texto, menú nativo o fallback de texto, PDF/imagen cupón). Evolution y Waha añaden Compose + humanización C (presence/typing + delay 20–45s, sin Redis/BullMQ). Baileys / WhatsMeow siguen como stubs.
 
 ---
 
@@ -68,6 +68,25 @@ Evolution (POST /webhook)
 | Outbound | text / buttons / list / media | Zod + builders |
 | Startup | secrets | Zod `envSchema` (fail fast) |
 
+### 2.4 Waha (WhatsApp Agents)
+
+```text
+Waha (POST /webhook)
+  → presentation/webhookRoutes
+    → services (inboundHandler + demoFlow + outboundBuilders)
+      → services/humanizedDispatch (startTyping → delay → send)
+        → infrastructure/wahaClient
+          → /api/startTyping
+          → /api/sendText | sendFile | sendImage | sendButtons | sendList
+```
+
+| Flecha | Dato | Quién valida |
+|---|---|---|
+| POST inbound | envelope Waha | Rutas: secreto opcional `x-webhook-secret`; Zod webhook → `InboundEvent` solo si `fromMe === false` |
+| Humanize | typing + delay ms | `HUMANIZE_MIN_MS`/`HUMANIZE_MAX_MS` + sleep inyectable |
+| Outbound | text / buttons / list / media | Zod + builders |
+| Startup | secrets | Zod `envSchema` (fail fast) |
+
 ---
 
 ## 3. Justificación de Clean Architecture
@@ -76,7 +95,7 @@ Evolution (POST /webhook)
 
 **WhatsApp Meta:** las rutas Express solo validan y delegan. La orquestación del demo está en `services/`; el HTTP a Graph queda en `infrastructure/`.
 
-**WhatsApp Evolution:** misma separación. El cliente HTTP de Evolution está aislado (paths v2 documentados en README) para absorber churn de la API. La humanización C vive en `humanizedDispatch` (inyectable en tests) sin colas Redis.
+**WhatsApp Waha:** misma separación. El cliente HTTP de Waha aísla paths REST (`/api/sendText`, `/api/startTyping`, etc.) para absorber churn. Menú por defecto = texto numerado (CORE no garantiza botones/listas). Humanización C en `humanizedDispatch` sin Redis.
 
 ---
 
@@ -85,6 +104,7 @@ Evolution (POST /webhook)
 - Task manager: Zod rechaza títulos vacíos; storage corrupto → `[]`.
 - Meta: env incompleto aborta el arranque; verify incorrecto → 403; Graph mockeado en Vitest; HMAC opcional documentado.
 - Evolution: env incompleto aborta; `EVOLUTION_WEBHOOK_SECRET` opcional (header `x-webhook-secret`; sin secreto un túnel público es un send-oracle); envíos pasan por presence+delay (en production no se acepta delay 0); sleep mockeado / delays en 0 solo fuera de production; HTTP Evolution mockeado; non-2xx no cuenta como `sent`; disclaimer de gateway no oficial en README.
+- Waha: el mismo patrón con `WAHA_WEBHOOK_SECRET`, `fromMe === false`, piso de delay en production, HTTP Waha mockeado, disclaimer no oficial, y fallback de menú de texto en CORE.
 
 ---
 
@@ -98,9 +118,10 @@ Evolution (POST /webhook)
 | Webhook verify | Challenge Meta | `verifyWebhook.ts` |
 | Graph client | Adapter HTTP Cloud API | `metaGraphClient.ts` |
 | Evolution client | Adapter HTTP gateway v2 | `evolutionClient.ts` |
+| Waha client | Adapter HTTP CORE/PLUS | `wahaClient.ts` |
 | Humanized dispatch | Presence + delay 20–45s | `humanizedDispatch.ts` |
 | Demo flow | Keywords / botones → respuestas | `demoFlow.ts` |
-| Anti-ban | Docs + Evolution C runtime | `WhatsApp-agents/docs/anti-ban-strategy.md` |
+| Anti-ban | Docs + Evolution/Waha C runtime | `WhatsApp-agents/docs/anti-ban-strategy.md` |
 | Author signature | Primera línea en TS/JS nuevos | `//Mariano Montini ('bosque', 'bosquestudio')` |
 
 ---
@@ -111,8 +132,8 @@ Evolution (POST /webhook)
 - Estado fuera de `App.tsx`
 - Validación Zod antes de mutar
 - Firma de autor como convención de ownership en el portfolio
-- **Meta primero** (API oficial) y **Evolution segundo** (Compose + humanización C simple)
-- Capas presentation / services / infrastructure / contracts en ambos bots
+- **Meta primero**, **Evolution segundo**, **Waha tercero** (Compose + humanización C; menú texto en CORE)
+- Capas presentation / services / infrastructure / contracts en los tres bots
 - Humanización C sin Redis: suficiente para demo educativo; riesgo de ban / ToS explícito
 - Track WhatsApp **paralelo** al académico
 
@@ -125,7 +146,8 @@ Evolution (POST /webhook)
 | Repo 1 implementado y tests verdes | OK | 5 tests |
 | Meta Cloud API Level 1 + tests | OK | Vitest (Graph mock) |
 | Evolution API Level 1 + Compose + humanización C | OK | Vitest 31 tests (Evolution mock, sleep inyectado) |
-| Waha / Baileys / WhatsMeow | — | Stubs README only |
+| Waha Level 1 + Compose + humanización C | OK | Vitest 40 tests (Waha mock, sleep inyectado); `docker compose config` OK; live `up` no reclamado |
+| Baileys / WhatsMeow | — | Stubs README only |
 | Repos académicos 2–5 sin código | — | Siguiente académico: express-api-boilerplate |
 
 ---
@@ -141,3 +163,4 @@ Evolution (POST /webhook)
 | 2026-08-21 | `whatsapp-agents` | Hub WhatsApp + Meta Cloud API Level 1 (paralelo) |
 | 2026-08-21 | `whatsapp-agents` §7 | HMAC webhook + Graph failures honestos (re-audit PASS WITH GAPS) |
 | 2026-08-21 | `whatsapp-agents-evolution` | Evolution Level 1 + Compose + humanización C |
+| 2026-08-22 | `whatsapp-agents-waha` | Waha Level 1 + Compose + humanización C + fallback de menú texto |

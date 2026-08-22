@@ -1,0 +1,54 @@
+# Waha + Level 1 bot — educational / demo only.
+# Unofficial WhatsApp gateway: ban risk; not for production compliance claims.
+#
+# Slim (default): CORE image `devlikeapro/waha` (no extra Redis/Postgres).
+# Documented image family: https://hub.docker.com/r/devlikeapro/waha
+# Tag: `latest` (CORE). PLUS engines (GOWS/NOWEB list messages) are a different image.
+# Live `docker compose up` against unofficial images is UNVERIFIED and may fail.
+#
+# Usage:
+#   cp .env.example .env   # set WAHA_API_KEY; set WAHA_WEBHOOK_SECRET for tunnels
+#   docker compose up --build
+#   docker compose config   # mechanical validate (claimed in this change)
+
+services:
+  # Waha gateway - unofficial WhatsApp HTTP API (CORE image, dashboard on :3000).
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: waha
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      WAHA_API_KEY: ${WAHA_API_KEY:-00000000000000000000000000000000}
+      WHATSAPP_HOOK_URL: ${WHATSAPP_HOOK_URL:-http://bot:3002/webhook}
+      WHATSAPP_HOOK_EVENTS: message
+      WHATSAPP_HOOK_CUSTOM_HEADERS: ${WHATSAPP_HOOK_CUSTOM_HEADERS:-}
+    volumes:
+      - waha_sessions:/app/.sessions
+
+  # Bot service - Express Level 1 demo (presence + delay humanization C).
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: waha-bot
+    restart: unless-stopped
+    depends_on:
+      - waha
+    ports:
+      - "${PORT:-3002}:3002"
+    environment:
+      NODE_ENV: production
+      WAHA_API_URL: http://waha:3000
+      WAHA_API_KEY: ${WAHA_API_KEY:-00000000000000000000000000000000}
+      WAHA_SESSION: ${WAHA_SESSION:-default}
+      WAHA_WEBHOOK_SECRET: ${WAHA_WEBHOOK_SECRET:-}
+      WAHA_MENU_MODE: ${WAHA_MENU_MODE:-text}
+      PORT: "3002"
+      COUPON_MEDIA_URL: ${COUPON_MEDIA_URL:-https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf}
+      HUMANIZE_MIN_MS: ${HUMANIZE_MIN_MS:-20000}
+      HUMANIZE_MAX_MS: ${HUMANIZE_MAX_MS:-45000}
+
+volumes:
+  waha_sessions:
