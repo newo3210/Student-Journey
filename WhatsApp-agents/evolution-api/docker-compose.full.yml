@@ -1,0 +1,38 @@
+# Closer-to-official Evolution v2 stack (Redis + Postgres wired).
+# Does not claim a live `compose up` was executed.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.full.yml --profile full config
+#   docker compose -f docker-compose.yml -f docker-compose.full.yml --profile full up --build
+
+services:
+  redis:
+    image: redis:7-alpine
+    profiles: ["full"]
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["full"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: evolution
+      POSTGRES_PASSWORD: evolution
+      POSTGRES_DB: evolution
+    volumes:
+      - evolution_pg:/var/lib/postgresql/data
+
+  evolution-api:
+    environment:
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://evolution:evolution@postgres:5432/evolution?schema=public
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_started
+
+volumes:
+  evolution_pg:
